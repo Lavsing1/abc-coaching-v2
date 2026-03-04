@@ -1,0 +1,1695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>ABC Coaching Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+/* ── Variables ─────────────────────────────────────────────────────────────── */
+:root {
+  --bg:       #070711;
+  --bg2:      #0d0d1f;
+  --surface:  #111127;
+  --surface2: #181836;
+  --border:   rgba(120,80,255,.14);
+  --border2:  rgba(120,80,255,.25);
+  --primary:  #7c3aed;
+  --primary2: #6d28d9;
+  --cyan:     #06b6d4;
+  --amber:    #f59e0b;
+  --green:    #10b981;
+  --red:      #ef4444;
+  --text:     #f0eeff;
+  --muted:    #9090b0;
+  --r:        14px;
+  --r-sm:     9px;
+  --shadow:   0 12px 50px rgba(0,0,0,.6);
+  --glow:     0 0 50px rgba(124,58,237,.18);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+h1,h2,h3,h4,h5{font-family:'Plus Jakarta Sans',sans-serif;letter-spacing:-.02em}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--surface)}
+::-webkit-scrollbar-thumb{background:var(--primary);border-radius:3px}
+
+/* ── Animations ────────────────────────────────────────────────────────────── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse2{0%,100%{opacity:1}50%{opacity:.45}}
+@keyframes glow{0%,100%{box-shadow:0 0 20px rgba(124,58,237,.3)}50%{box-shadow:0 0 40px rgba(124,58,237,.6)}}
+@keyframes timerPulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.5)}50%{box-shadow:0 0 0 8px rgba(239,68,68,0)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes shimmer{from{background-position:-200% 0}to{background-position:200% 0}}
+.fade-in{animation:fadeUp .4s ease both}
+
+/* ── Layout ────────────────────────────────────────────────────────────────── */
+#root{min-height:100vh}
+
+/* ── Glassmorphism Card ────────────────────────────────────────────────────── */
+.glass{background:rgba(17,17,39,.7);border:1px solid var(--border);backdrop-filter:blur(24px);border-radius:var(--r)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow)}
+.card-hover{transition:transform .2s,box-shadow .2s,border-color .2s;cursor:pointer}
+.card-hover:hover{transform:translateY(-4px);border-color:var(--border2);box-shadow:var(--shadow),var(--glow)}
+
+/* ── Buttons ───────────────────────────────────────────────────────────────── */
+.btn{display:inline-flex;align-items:center;gap:7px;padding:10px 22px;border:none;border-radius:var(--r-sm);font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;text-decoration:none;white-space:nowrap;user-select:none}
+.btn-primary{background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;box-shadow:0 4px 20px rgba(124,58,237,.4)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(124,58,237,.55)}
+.btn-secondary{background:var(--surface2);color:var(--text);border:1px solid var(--border)}
+.btn-secondary:hover{border-color:var(--primary);background:rgba(124,58,237,.1)}
+.btn-danger{background:linear-gradient(135deg,var(--red),#dc2626);color:#fff}
+.btn-danger:hover{transform:translateY(-1px);box-shadow:0 4px 15px rgba(239,68,68,.4)}
+.btn-success{background:linear-gradient(135deg,var(--green),#059669);color:#fff}
+.btn-success:hover{transform:translateY(-1px);box-shadow:0 4px 15px rgba(16,185,129,.4)}
+.btn-warning{background:linear-gradient(135deg,var(--amber),#d97706);color:#fff}
+.btn-sm{padding:6px 14px;font-size:12px;border-radius:8px}
+.btn-xs{padding:4px 10px;font-size:11px;border-radius:6px}
+.btn-icon{padding:8px;border-radius:8px}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none!important;box-shadow:none!important}
+
+/* ── Forms ─────────────────────────────────────────────────────────────────── */
+.form-group{margin-bottom:16px}
+.label{display:block;font-size:11px;font-weight:700;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.7px}
+.input{width:100%;padding:11px 15px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--text);font-family:inherit;font-size:14px;outline:none;transition:border-color .2s,box-shadow .2s}
+.input:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(124,58,237,.15)}
+.input::placeholder{color:var(--muted);opacity:.7}
+select.input{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%239090b0' d='M6 8L0 0h12z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}
+textarea.input{resize:vertical;min-height:80px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:600px){.form-row{grid-template-columns:1fr}}
+
+/* ── Navbar ────────────────────────────────────────────────────────────────── */
+.navbar{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:62px;background:rgba(7,7,17,.9);backdrop-filter:blur(24px);border-bottom:1px solid var(--border)}
+.nav-brand{display:flex;align-items:center;gap:11px;font-size:18px;font-weight:800;color:var(--text)}
+.nav-logo{width:38px;height:38px;background:linear-gradient(135deg,var(--primary),var(--cyan));border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:17px;color:#fff;flex-shrink:0}
+.nav-right{display:flex;align-items:center;gap:8px}
+.nav-link{padding:7px 14px;border-radius:8px;font-size:14px;font-weight:500;color:var(--muted);cursor:pointer;transition:all .2s;border:none;background:none;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.nav-link:hover,.nav-link.active{color:var(--text);background:var(--surface)}
+
+/* ── Sidebar dashboard ─────────────────────────────────────────────────────── */
+.layout{display:flex;min-height:calc(100vh - 62px)}
+.sidebar{width:230px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);padding:20px 12px;position:sticky;top:62px;height:calc(100vh - 62px);overflow-y:auto;display:flex;flex-direction:column}
+.sidebar-section{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;padding:8px 10px 4px;margin-top:8px}
+.sidebar-item{display:flex;align-items:center;gap:11px;padding:9px 12px;border-radius:10px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;transition:all .2s;border:none;background:none;text-align:left;width:100%;margin-bottom:2px}
+.sidebar-item:hover{color:var(--text);background:var(--surface2)}
+.sidebar-item.active{color:var(--text);background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.2)}
+.sidebar-item.active .s-icon{color:var(--primary)}
+.s-icon{font-size:17px;width:20px;text-align:center;flex-shrink:0}
+.main{flex:1;padding:28px;min-width:0;overflow-x:hidden}
+@media(max-width:768px){.sidebar{display:none}.main{padding:16px}}
+
+/* ── Page header ───────────────────────────────────────────────────────────── */
+.page-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;gap:12px;flex-wrap:wrap}
+.page-title{font-size:22px;font-weight:800}
+.page-sub{color:var(--muted);font-size:13px;margin-top:3px}
+
+/* ── Stats grid ────────────────────────────────────────────────────────────── */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;margin-bottom:28px}
+.stat-card{padding:22px;border-radius:var(--r);background:var(--surface);border:1px solid var(--border);position:relative;overflow:hidden}
+.stat-card::after{content:'';position:absolute;top:-20px;right:-20px;width:70px;height:70px;border-radius:50%;background:var(--glow-color,var(--primary));opacity:.07}
+.stat-num{font-size:30px;font-weight:800;font-family:'JetBrains Mono',monospace}
+.stat-lbl{font-size:12px;color:var(--muted);margin-top:3px}
+
+/* ── Table ─────────────────────────────────────────────────────────────────── */
+.tbl-wrap{overflow-x:auto;border-radius:var(--r);background:var(--surface);border:1px solid var(--border)}
+table{width:100%;border-collapse:collapse}
+thead th{padding:12px 18px;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);background:var(--surface2);text-align:left;white-space:nowrap}
+tbody td{padding:13px 18px;font-size:13px;border-bottom:1px solid rgba(120,80,255,.05);vertical-align:middle}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:rgba(124,58,237,.04)}
+
+/* ── Badges ────────────────────────────────────────────────────────────────── */
+.badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.3px;text-transform:uppercase}
+.b-purple{background:rgba(124,58,237,.2);color:#c4b5fd;border:1px solid rgba(124,58,237,.3)}
+.b-cyan{background:rgba(6,182,212,.15);color:#22d3ee;border:1px solid rgba(6,182,212,.3)}
+.b-green{background:rgba(16,185,129,.15);color:#34d399;border:1px solid rgba(16,185,129,.3)}
+.b-amber{background:rgba(245,158,11,.15);color:#fbbf24;border:1px solid rgba(245,158,11,.3)}
+.b-red{background:rgba(239,68,68,.15);color:#f87171;border:1px solid rgba(239,68,68,.3)}
+.b-gray{background:rgba(120,120,160,.15);color:#a0a0c0;border:1px solid rgba(120,120,160,.2)}
+
+/* ── Modal ─────────────────────────────────────────────────────────────────── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);z-index:200;display:flex;align-items:center;justify-content:center;padding:16px;animation:fadeUp .2s ease}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);width:100%;max-width:560px;max-height:90vh;overflow-y:auto;padding:28px;box-shadow:0 30px 80px rgba(0,0,0,.9)}
+.modal-lg{max-width:760px}
+.modal-title{font-size:18px;font-weight:800;margin-bottom:22px;display:flex;align-items:center;gap:10px;justify-content:space-between}
+.modal-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px;padding:2px 6px;border-radius:6px;transition:color .2s}
+.modal-close:hover{color:var(--text)}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:22px;padding-top:16px;border-top:1px solid var(--border)}
+
+/* ── Toast ─────────────────────────────────────────────────────────────────── */
+.toast-wrap{position:fixed;top:76px;right:18px;z-index:300;display:flex;flex-direction:column;gap:9px;pointer-events:none}
+.toast{padding:13px 16px;border-radius:12px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:9px;animation:fadeUp .3s ease;pointer-events:auto;min-width:260px;max-width:360px;box-shadow:0 8px 30px rgba(0,0,0,.5)}
+.toast-s{background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.3);color:#34d399}
+.toast-e{background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:#f87171}
+.toast-i{background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.3);color:#a78bfa}
+.toast-w{background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.3);color:#fbbf24}
+
+/* ── Spinner ───────────────────────────────────────────────────────────────── */
+.spin{width:18px;height:18px;border:2px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:inline-block}
+
+/* ── Pagination ────────────────────────────────────────────────────────────── */
+.pg{display:flex;align-items:center;gap:8px;justify-content:center;margin-top:20px;flex-wrap:wrap}
+.pg-btn{padding:7px 14px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:13px;cursor:pointer;transition:all .2s}
+.pg-btn:hover,.pg-btn.active{border-color:var(--primary);background:rgba(124,58,237,.15);color:var(--text)}
+.pg-btn:disabled{opacity:.35;cursor:not-allowed}
+
+/* ── Timer ─────────────────────────────────────────────────────────────────── */
+.timer{display:inline-flex;align-items:center;gap:8px;padding:8px 18px;border-radius:100px;background:var(--surface2);border:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700}
+.timer.warn{color:var(--amber);border-color:rgba(245,158,11,.4)}
+.timer.danger{color:var(--red);border-color:rgba(239,68,68,.4);animation:timerPulse .8s infinite}
+
+/* ── Progress ──────────────────────────────────────────────────────────────── */
+.progress{height:6px;background:var(--surface2);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--cyan));border-radius:3px;transition:width .4s}
+
+/* ── Option buttons ────────────────────────────────────────────────────────── */
+.option{padding:13px 16px;border-radius:10px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:14px;cursor:pointer;text-align:left;transition:all .2s;display:flex;align-items:center;gap:12px;width:100%;margin-bottom:9px}
+.option:hover{border-color:var(--primary);background:rgba(124,58,237,.08)}
+.option.sel{border-color:var(--primary);background:rgba(124,58,237,.15);color:#c4b5fd}
+.option.correct{border-color:var(--green);background:rgba(16,185,129,.1);color:#34d399}
+.option.wrong{border-color:var(--red);background:rgba(239,68,68,.08);color:#f87171}
+.opt-ltr{width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;transition:background .2s}
+.option.sel .opt-ltr{background:var(--primary)}
+.option.correct .opt-ltr{background:var(--green)}
+
+/* ── Q-nav dots ────────────────────────────────────────────────────────────── */
+.q-nav{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:20px}
+.q-dot{width:34px;height:34px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center}
+.q-dot:hover{border-color:var(--primary)}
+.q-dot.ans{background:rgba(124,58,237,.2);border-color:var(--primary);color:var(--text)}
+.q-dot.cur{background:var(--primary);border-color:var(--primary);color:#fff}
+
+/* ── Score circle ──────────────────────────────────────────────────────────── */
+.score-ring{width:130px;height:130px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;border:4px solid;margin:0 auto 16px}
+.score-num{font-size:30px;font-weight:900;font-family:'JetBrains Mono',monospace}
+.score-label{font-size:11px;color:var(--muted);margin-top:1px}
+
+/* ── Toggle switch ─────────────────────────────────────────────────────────── */
+.toggle{position:relative;display:inline-block;width:38px;height:21px}
+.toggle input{opacity:0;width:0;height:0}
+.toggle-slider{position:absolute;cursor:pointer;inset:0;background:rgba(255,255,255,.1);border-radius:21px;transition:.2s}
+.toggle-slider:before{content:'';position:absolute;height:15px;width:15px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.2s}
+.toggle input:checked+.toggle-slider{background:var(--primary)}
+.toggle input:checked+.toggle-slider:before{transform:translateX(17px)}
+
+/* ── Landing ───────────────────────────────────────────────────────────────── */
+.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:80px 24px}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 70% at 50% -5%,rgba(124,58,237,.22) 0%,transparent 65%),radial-gradient(ellipse 50% 40% at 85% 90%,rgba(6,182,212,.13) 0%,transparent 50%)}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(120,80,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(120,80,255,.04) 1px,transparent 1px);background-size:55px 55px}
+.hero-content{position:relative;text-align:center;max-width:820px}
+.hero-pill{display:inline-flex;align-items:center;gap:7px;padding:7px 18px;background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.3);border-radius:100px;font-size:13px;font-weight:600;color:#c4b5fd;margin-bottom:24px;animation:float 4s ease-in-out infinite}
+.hero-title{font-size:clamp(34px,7vw,74px);font-weight:900;line-height:1.08;letter-spacing:-.03em;margin-bottom:18px}
+.hero-title .hl{background:linear-gradient(135deg,var(--primary),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-desc{font-size:17px;color:var(--muted);max-width:550px;margin:0 auto 38px;line-height:1.65}
+.hero-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.features-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:18px}
+.feat-card{padding:26px;border-radius:var(--r);background:var(--surface);border:1px solid var(--border);transition:all .3s}
+.feat-card:hover{transform:translateY(-5px);border-color:var(--primary);box-shadow:var(--glow)}
+.feat-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:14px}
+section.sec{padding:80px 24px;max-width:1200px;margin:0 auto}
+.sec-title{font-size:clamp(26px,5vw,44px);font-weight:800;text-align:center;margin-bottom:10px}
+.sec-sub{text-align:center;color:var(--muted);font-size:16px;margin-bottom:46px}
+footer{background:var(--surface);border-top:1px solid var(--border);padding:36px 24px;text-align:center}
+
+/* ── Mobile sidebar toggle ─────────────────────────────────────────────────── */
+.mob-menu-btn{display:none;background:none;border:none;color:var(--text);font-size:22px;cursor:pointer;padding:6px}
+@media(max-width:768px){.mob-menu-btn{display:block}.nav-links-desktop{display:none}}
+
+/* ── Search / filter bar ───────────────────────────────────────────────────── */
+.filter-bar{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;align-items:center}
+.search-wrap{position:relative;flex:1;min-width:180px}
+.search-wrap .input{padding-left:38px}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:15px}
+
+/* ── Empty state ───────────────────────────────────────────────────────────── */
+.empty{text-align:center;padding:56px 20px;color:var(--muted)}
+.empty-icon{font-size:48px;margin-bottom:12px;opacity:.5}
+.empty-txt{font-size:16px;font-weight:600}
+.empty-sub{font-size:13px;margin-top:5px}
+
+/* ── External test card ────────────────────────────────────────────────────── */
+.ext-card{padding:20px;border-radius:var(--r);background:var(--surface);border:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:14px;transition:all .2s}
+.ext-card:hover{border-color:var(--border2)}
+
+/* ── Note card ─────────────────────────────────────────────────────────────── */
+.note-card{padding:20px;border-radius:var(--r);background:var(--surface);border:1px solid var(--border)}
+.note-card:hover{border-color:var(--border2)}
+
+/* ── Q editor ──────────────────────────────────────────────────────────────── */
+.q-editor{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:14px}
+.q-editor-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.opt-row{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.opt-radio{accent-color:var(--primary);width:16px;height:16px;cursor:pointer}
+
+/* ── Review card ───────────────────────────────────────────────────────────── */
+.review-card{padding:18px;background:var(--surface);border-radius:12px;margin-bottom:12px;border-left:3px solid}
+.review-correct{border-left-color:var(--green)}
+.review-wrong{border-left-color:var(--red)}
+
+/* ── Tab nav ───────────────────────────────────────────────────────────────── */
+.tab-bar{display:flex;gap:3px;padding:3px;background:var(--surface2);border-radius:12px;border:1px solid var(--border);margin-bottom:22px}
+.tab-btn{flex:1;padding:8px;border-radius:9px;border:none;background:none;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;font-family:inherit}
+.tab-btn.active{background:var(--surface);color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,.3)}
+
+/* ── Confirm dialog ────────────────────────────────────────────────────────── */
+.confirm-body{color:var(--muted);line-height:1.6}
+
+/* ── Loading skeleton ──────────────────────────────────────────────────────── */
+.skel{background:linear-gradient(90deg,var(--surface2) 25%,var(--surface) 50%,var(--surface2) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:8px}
+
+/* ── Scrollable modal ──────────────────────────────────────────────────────── */
+.scroll-area{overflow-y:auto}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<div id="toasts" class="toast-wrap"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+<script type="text/babel">
+const { useState, useEffect, useCallback, useRef, createContext, useContext, useMemo } = React;
+
+// ── API URL ──────────────────────────────────────────────────────────────────
+const API = window.__API_URL__ || 'http://localhost:5000/api';
+
+// ── Toast system ─────────────────────────────────────────────────────────────
+let _toastId = 0;
+const toast = (msg, type = 'i') => {
+  const id = ++_toastId;
+  const el = document.createElement('div');
+  el.className = `toast toast-${type}`;
+  const icons = { s: '✓', e: '✗', i: 'ℹ', w: '⚠' };
+  el.innerHTML = `<span>${icons[type]||'ℹ'}</span><span>${msg}</span>`;
+  document.getElementById('toasts').appendChild(el);
+  setTimeout(() => el.remove(), 4000);
+};
+
+// ── API client ────────────────────────────────────────────────────────────────
+const api = {
+  _token: null,
+  setToken(t) { this._token = t; },
+  async req(method, path, body, isForm = false) {
+    const h = {};
+    if (this._token) h['Authorization'] = `Bearer ${this._token}`;
+    if (!isForm) h['Content-Type'] = 'application/json';
+    const res = await fetch(`${API}${path}`, {
+      method, headers: h,
+      body: body ? (isForm ? body : JSON.stringify(body)) : undefined,
+    });
+    const data = await res.json().catch(() => ({ error: 'Server error' }));
+    if (!res.ok) throw new Error(data.error || 'Request failed');
+    return data;
+  },
+  get:  (p) => api.req('GET', p),
+  post: (p, b) => api.req('POST', p, b),
+  put:  (p, b) => api.req('PUT', p, b),
+  patch:(p, b) => api.req('PATCH', p, b),
+  del:  (p)   => api.req('DELETE', p),
+  form: (p, fd) => api.req('POST', p, fd, true),
+  formPut: (p, fd) => api.req('PUT', p, fd, true),
+};
+
+// ── Auth Context ──────────────────────────────────────────────────────────────
+const AuthCtx = createContext(null);
+const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const u = localStorage.getItem('user');
+    if (token && u) { api.setToken(token); setUser(JSON.parse(u)); }
+    setLoading(false);
+  }, []);
+
+  const login = useCallback(async (username, password) => {
+    const d = await api.post('/auth/login', { username, password });
+    localStorage.setItem('token', d.token);
+    localStorage.setItem('user', JSON.stringify(d.user));
+    api.setToken(d.token);
+    setUser(d.user);
+    return d.user;
+  }, []);
+
+  const logout = useCallback(() => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    api.setToken(null);
+    setUser(null);
+  }, []);
+
+  return <AuthCtx.Provider value={{ user, login, logout, loading }}>{children}</AuthCtx.Provider>;
+};
+const useAuth = () => useContext(AuthCtx);
+
+// ── Spinner ───────────────────────────────────────────────────────────────────
+const Spin = ({ size = 18 }) => <div className="spin" style={{ width: size, height: size }} />;
+
+// ── Confirm dialog ────────────────────────────────────────────────────────────
+const Confirm = ({ msg, onYes, onNo, danger = true }) => (
+  <div className="overlay">
+    <div className="modal" style={{ maxWidth: 400 }}>
+      <div className="modal-title">Confirm Action <button className="modal-close" onClick={onNo}>✕</button></div>
+      <p className="confirm-body">{msg}</p>
+      <div className="modal-actions">
+        <button className="btn btn-secondary" onClick={onNo}>Cancel</button>
+        <button className={`btn ${danger ? 'btn-danger' : 'btn-primary'}`} onClick={onYes}>{danger ? 'Delete' : 'Confirm'}</button>
+      </div>
+    </div>
+  </div>
+);
+
+// ── Modal wrapper ─────────────────────────────────────────────────────────────
+const Modal = ({ title, onClose, children, actions, lg }) => (
+  <div className="overlay" onClick={e => e.target === e.currentTarget && onClose()}>
+    <div className={`modal${lg ? ' modal-lg' : ''} fade-in`}>
+      <div className="modal-title">
+        <span>{title}</span>
+        <button className="modal-close" onClick={onClose}>✕</button>
+      </div>
+      {children}
+      {actions && <div className="modal-actions">{actions}</div>}
+    </div>
+  </div>
+);
+
+// ── Toggle button ─────────────────────────────────────────────────────────────
+const ToggleSwitch = ({ checked, onChange }) => (
+  <label className="toggle">
+    <input type="checkbox" checked={checked} onChange={onChange} />
+    <span className="toggle-slider" />
+  </label>
+);
+
+// ── Pagination ────────────────────────────────────────────────────────────────
+const Pagination = ({ page, totalPages, onChange }) => {
+  if (totalPages <= 1) return null;
+  return (
+    <div className="pg">
+      <button className="pg-btn" disabled={page <= 1} onClick={() => onChange(page - 1)}>← Prev</button>
+      {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => i + 1).map(p => (
+        <button key={p} className={`pg-btn ${p === page ? 'active' : ''}`} onClick={() => onChange(p)}>{p}</button>
+      ))}
+      <button className="pg-btn" disabled={page >= totalPages} onClick={() => onChange(page + 1)}>Next →</button>
+    </div>
+  );
+};
+
+// ── Class badge ───────────────────────────────────────────────────────────────
+const ClassBadge = ({ cls }) => (
+  <span className="badge b-cyan">Class {cls}</span>
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// LANDING PAGE
+// ─────────────────────────────────────────────────────────────────────────────
+const Landing = ({ onLogin }) => {
+  const [info, setInfo] = useState(null);
+  useEffect(() => { api.get('/public/info').then(setInfo).catch(() => {}); }, []);
+
+  return (
+    <div>
+      <nav className="navbar">
+        <div className="nav-brand"><div className="nav-logo">A</div>ABC Coaching</div>
+        <div className="nav-right">
+          <a href="#features" className="nav-link nav-links-desktop">Features</a>
+          <a href="#classes" className="nav-link nav-links-desktop">Classes</a>
+          <a href="#contact" className="nav-link nav-links-desktop">Contact</a>
+          <button className="btn btn-primary" onClick={onLogin} style={{ padding: '8px 18px' }}>Student Login</button>
+          
+        </div>
+      </nav>
+
+      <div className="hero">
+        <div className="hero-bg" />
+        <div className="hero-grid" />
+        <div className="hero-content fade-in">
+          <div className="hero-pill">🎓 Classes 9th – 12th</div>
+          <h1 className="hero-title">Master Your<br /><span className="hl">Academics</span></h1>
+          <p className="hero-desc">{info?.description || 'Free tests, comprehensive notes, and personalized learning for every student from class 9 to 12.'}</p>
+          <div className="hero-btns">
+            <button className="btn btn-primary" onClick={onLogin} style={{ padding: '13px 32px', fontSize: 16 }}>▶ Student Login</button>
+            <a href="#features" className="btn btn-secondary" style={{ padding: '13px 32px', fontSize: 16, textDecoration: 'none' }}>Explore Features</a>
+          </div>
+        </div>
+      </div>
+
+      <section className="sec" id="features">
+        <div className="sec-title">Why Choose <span style={{ color: 'var(--primary)' }}>ABC Coaching?</span></div>
+        <p className="sec-sub">Everything you need to excel — absolutely free</p>
+        <div className="features-grid">
+          {(info?.features || [
+            { emoji: '📚', title: 'Free Study Notes', desc: 'Chapter-wise notes for all subjects, accessible anytime' },
+            { emoji: '📝', title: 'Practice Tests',    desc: 'MCQ tests with timer, shuffle, and instant results' },
+            { emoji: '🏆', title: 'Progress Tracking', desc: 'Score history and detailed performance review' },
+            { emoji: '📋', title: 'External Resources',desc: 'Google Forms, PDF exams, and image-based tests' },
+          ]).map((f, i) => (
+            <div key={i} className="feat-card">
+              <div className="feat-icon" style={{ background: ['rgba(124,58,237,.2)','rgba(6,182,212,.15)','rgba(245,158,11,.15)','rgba(16,185,129,.15)'][i % 4] }}>{f.emoji}</div>
+              <h3 style={{ marginBottom: 8 }}>{f.title}</h3>
+              <p style={{ color: 'var(--muted)', fontSize: 14, lineHeight: 1.6 }}>{f.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section id="classes" style={{ padding: '60px 24px', background: 'var(--surface)', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)' }}>
+        <div style={{ maxWidth: 900, margin: '0 auto' }}>
+          <div className="sec-title">Classes We Offer</div>
+          <p className="sec-sub">Structured, syllabus-aligned content for every grade</p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(160px,1fr))', gap: 16 }}>
+            {[9,10,11,12].map(c => (
+              <div key={c} style={{ padding: 28, background: 'var(--surface2)', borderRadius: 'var(--r)', border: '1px solid var(--border)', textAlign: 'center' }}>
+                <div style={{ fontSize: 38, fontWeight: 900, color: 'var(--primary)', fontFamily: 'JetBrains Mono' }}>{c}</div>
+                <div style={{ color: 'var(--muted)', fontSize: 13, marginTop: 4 }}>Standard</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {info?.contact && (
+        <section className="sec" id="contact">
+          <div className="sec-title">Get in Touch</div>
+          <p className="sec-sub">Have questions? We're here to help</p>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 20, flexWrap: 'wrap' }}>
+            {[['📞', info.contact.phone], ['📧', info.contact.email], ['📍', info.contact.address]].map(([e, v]) => (
+              <div key={v} className="card" style={{ padding: '22px 28px', textAlign: 'center', minWidth: 160 }}>
+                <div style={{ fontSize: 26, marginBottom: 8 }}>{e}</div>
+                <div style={{ fontWeight: 600, fontSize: 14 }}>{v}</div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <footer>
+        <p style={{ color: 'var(--muted)', fontSize: 13 }}>© {new Date().getFullYear()} ABC Coaching Center. All rights reserved.</p>
+      </footer>
+    </div>
+  );
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// LOGIN PAGE
+// ─────────────────────────────────────────────────────────────────────────────
+const Login = ({ onBack }) => {
+  const { login } = useAuth();
+  const [form, setForm] = useState({ username: '', password: '' });
+  const [loading, setLoading] = useState(false);
+
+  const submit = async (e) => {
+    e.preventDefault();
+    if (!form.username || !form.password) return toast('Please fill all fields', 'w');
+    setLoading(true);
+    try { await login(form.username, form.password); }
+    catch (e) { toast(e.message, 'e'); }
+    finally { setLoading(false); }
+  };
+
+  return (
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24, position: 'relative' }}>
+      <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 60% 60% at 50% 50%,rgba(124,58,237,.1) 0%,transparent 70%)' }} />
+      <div style={{ width: '100%', maxWidth: 420, position: 'relative' }}>
+        <button className="btn btn-secondary btn-sm" onClick={onBack} style={{ marginBottom: 20 }}>← Back to Home</button>
+        <div className="card fade-in" style={{ padding: '38px 34px' }}>
+          <div style={{ textAlign: 'center', marginBottom: 28 }}>
+            <div className="nav-logo" style={{ width: 54, height: 54, fontSize: 22, margin: '0 auto 14px' }}>A</div>
+            <h2 style={{ fontSize: 22 }}>Welcome Back</h2>
+            <p style={{ color: 'var(--muted)', fontSize: 13, marginTop: 5 }}>Sign in to your student account</p>
+          </div>
+          <form onSubmit={submit}>
+            <div className="form-group">
+              <label className="label">Student ID / Username</label>
+              <input className="input" placeholder="Enter your ID" value={form.username} onChange={e => setForm(f => ({ ...f, username: e.target.value }))} autoComplete="username" />
+            </div>
+            <div className="form-group">
+              <label className="label">Password</label>
+              <input type="password" className="input" placeholder="Enter your password" value={form.password} onChange={e => setForm(f => ({ ...f, password: e.target.value }))} autoComplete="current-password" />
+            </div>
+            <button type="submit" className="btn btn-primary" disabled={loading} style={{ width: '100%', justifyContent: 'center', padding: '13px', marginTop: 6 }}>
+              {loading ? <Spin /> : 'Sign In →'}
+            </button>
+          </form>
+          <p style={{ marginTop: 20, fontSize: 12, color: 'var(--muted)', textAlign: 'center', lineHeight: 1.6 }}>🔒 Login credentials are provided by your coaching admin.</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// STUDENT DASHBOARD
+// ─────────────────────────────────────────────────────────────────────────────
+const StudentDash = () => {
+  const { user, logout } = useAuth();
+  const [page, setPage] = useState('home');
+  const [testAttempt, setTestAttempt] = useState(null);
+  const [resultView, setResultView] = useState(null);
+
+  const navItems = [
+    { id: 'home',     icon: '🏠', label: 'Dashboard' },
+    { id: 'tests',    icon: '📝', label: 'Tests' },
+    { id: 'ext',      icon: '📋', label: 'External Tests' },
+    { id: 'notes',    icon: '📚', label: 'Study Notes' },
+    { id: 'results',  icon: '📊', label: 'My Results' },
+  ];
+
+  if (testAttempt) return <TestAttempt test={testAttempt} onDone={r => { setTestAttempt(null); setResultView(r); }} onCancel={() => setTestAttempt(null)} />;
+  if (resultView)  return <ResultDetail result={resultView} onBack={() => setResultView(null)} />;
+
+  return (
+    <div>
+      <nav className="navbar">
+        <div className="nav-brand"><div className="nav-logo">A</div>ABC Coaching</div>
+        <div className="nav-right">
+          <span className="badge b-cyan" style={{ marginRight: 6 }}>Class {user.class}</span>
+          <span style={{ fontSize: 13, fontWeight: 600, padding: '0 8px' }}>{user.name}</span>
+          <button className="btn btn-secondary btn-sm" onClick={logout}>🚪 Logout</button>
+        </div>
+      </nav>
+      <div className="layout">
+        <aside className="sidebar">
+          <div style={{ padding: '14px 10px', marginBottom: 8, background: 'var(--surface2)', borderRadius: 10, border: '1px solid var(--border)' }}>
+            <div style={{ fontSize: 12, color: 'var(--muted)' }}>Logged in as</div>
+            <div style={{ fontWeight: 700, fontSize: 14, marginTop: 2 }}>{user.name}</div>
+            <div className="badge b-purple" style={{ marginTop: 6 }}>Class {user.class} Student</div>
+          </div>
+          {navItems.map(n => (
+            <button key={n.id} className={`sidebar-item ${page === n.id ? 'active' : ''}`} onClick={() => setPage(n.id)}>
+              <span className="s-icon">{n.icon}</span>{n.label}
+            </button>
+          ))}
+          <div style={{ flex: 1 }} />
+          <button className="sidebar-item" onClick={logout} style={{ color: 'var(--red)', marginTop: 8 }}>
+            <span className="s-icon">🚪</span>Logout
+          </button>
+        </aside>
+        <main className="main">
+          {page === 'home'    && <StudentHome setPage={setPage} />}
+          {page === 'tests'   && <StudentTests onAttempt={setTestAttempt} onViewResult={setResultView} />}
+          {page === 'ext'     && <StudentExtTests />}
+          {page === 'notes'   && <StudentNotes />}
+          {page === 'results' && <StudentResults onView={setResultView} />}
+        </main>
+      </div>
+    </div>
+  );
+};
+
+const StudentHome = ({ setPage }) => {
+  const { user } = useAuth();
+  const [data, setData] = useState({ tests: 0, notes: 0, results: [] });
+  useEffect(() => {
+    Promise.all([
+      api.get('/student/tests'),
+      api.get('/student/notes'),
+      api.get('/student/results'),
+    ]).then(([t, n, r]) => setData({ tests: t.tests.length, notes: n.notes.length, results: r.results })).catch(() => {});
+  }, []);
+
+  const avg = data.results.length ? Math.round(data.results.reduce((a, r) => a + r.score, 0) / data.results.length) : null;
+
+  return (
+    <div className="fade-in">
+      <div className="page-hdr"><div><h1 className="page-title">Good day, {user.name.split(' ')[0]}! 👋</h1><p className="page-sub">Class {user.class} Student Dashboard</p></div></div>
+      <div className="stats-grid">
+        {[
+          { label: 'Tests Available', val: data.tests, color: 'var(--primary)', glow: 'var(--primary)' },
+          { label: 'Tests Completed',  val: data.results.length, color: 'var(--green)', glow: 'var(--green)' },
+          { label: 'Average Score',    val: avg !== null ? `${avg}%` : '—', color: 'var(--cyan)', glow: 'var(--cyan)' },
+          { label: 'Study Notes',      val: data.notes, color: 'var(--amber)', glow: 'var(--amber)' },
+        ].map((s, i) => (
+          <div key={i} className="stat-card" style={{ '--glow-color': s.glow }}>
+            <div className="stat-num" style={{ color: s.color }}>{s.val}</div>
+            <div className="stat-lbl">{s.label}</div>
+          </div>
+        ))}
+      </div>
+      {data.results.length > 0 && (
+        <div className="card" style={{ padding: 22, marginBottom: 22 }}>
+          <h3 style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between' }}>
+            Recent Results <button className="btn btn-secondary btn-sm" onClick={() => setPage('results')}>View All</button>
+          </h3>
+          {data.results.slice(0, 4).map(r => (
+            <div key={r._id} style={{ display: 'flex', justifyContent: 'space-between', padding: '11px 0', borderBottom: '1px solid var(--border)', alignItems: 'center' }}>
+              <div><div style={{ fontWeight: 600 }}>{r.test?.name}</div><div style={{ color: 'var(--muted)', fontSize: 12, marginTop: 2 }}>{r.test?.subject}</div></div>
+              <div style={{ textAlign: 'right' }}>
+                <div style={{ fontWeight: 800, fontSize: 18, fontFamily: 'JetBrains Mono', color: r.score >= 70 ? 'var(--green)' : r.score >= 40 ? 'var(--amber)' : 'var(--red)' }}>{r.score}%</div>
+                <div style={{ fontSize: 11, color: 'var(--muted)' }}>{r.correctAnswers}/{r.totalQuestions}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+        {[['📝','Take a Test','tests'],['📚','Study Notes','notes'],['📋','External Tests','ext'],['📊','My Results','results']].map(([e, l, p]) => (
+          <div key={p} className="card card-hover" style={{ padding: 22 }} onClick={() => setPage(p)}>
+            <div style={{ fontSize: 28, marginBottom: 10 }}>{e}</div>
+            <div style={{ fontWeight: 700 }}>{l}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const StudentTests = ({ onAttempt, onViewResult }) => {
+  const [tests, setTests] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
+
+  useEffect(() => {
+    api.get('/student/tests').then(d => setTests(d.tests)).catch(e => toast(e.message, 'e')).finally(() => setLoading(false));
+  }, []);
+
+  const filtered = tests.filter(t => t.name.toLowerCase().includes(search.toLowerCase()) || t.subject.toLowerCase().includes(search.toLowerCase()));
+
+  return (
+    <div className="fade-in">
+      <div className="page-hdr"><div><h1 className="page-title">Practice Tests</h1><p className="page-sub">{tests.length} tests for Class {tests[0]?.class || '—'}</p></div></div>
+      <div className="filter-bar">
+        <div className="search-wrap">
+          <span className="search-icon">🔍</span>
+          <input className="input" placeholder="Search tests..." value={search} onChange={e => setSearch(e.target.value)} />
+        </div>
+      </div>
+      {loading ? <div style={{ textAlign: 'center', padding: 80 }}><Spin size={40} /></div> : filtered.length === 0
+        ? <div className="empty"><div className="empty-icon">📝</div><div className="empty-txt">No tests available</div><div className="empty-sub">Check back later</div></div>
+        : (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(290px,1fr))', gap: 14 }}>
+            {filtered.map(t => (
+              <div key={t._id} className={`card ${!t.attempted ? 'card-hover' : ''}`} style={{ padding: 22 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
+                  <span className="badge b-purple">{t.subject}</span>
+                  {t.attempted ? <span className="badge b-green">✓ Done</span> : <span className="badge b-cyan">Pending</span>}
+                </div>
+                <h3 style={{ fontSize: 15, marginBottom: 8, lineHeight: 1.4 }}>{t.name}</h3>
+                <div style={{ display: 'flex', gap: 16, color: 'var(--muted)', fontSize: 12, marginBottom: 16 }}>
+                  <span>⏱ {t.duration} min</span>
+                  <span>📋 {t.questionCount} questions</span>
+                </div>
+                {!t.attempted
+                  ? <button className="btn btn-primary" style={{ width: '100%', justifyContent: 'center' }} onClick={() => onAttempt(t)}>▶ Start Test</button>
+                  : <button className="btn btn-secondary" style={{ width: '100%', justifyContent: 'center' }} disabled>Already Attempted</button>
+                }
+              </div>
+            ))}
+          </div>
+        )
+      }
+    </div>
+  );
+};
+
+// ── Test Attempt ──────────────────────────────────────────────────────────────
+const TestAttempt = ({ test, onDone, onCancel }) => {
+  const [data, setData] = useState(null);
+  const [answers, setAnswers] = useState({});
+  const [q, setQ] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(0);
+  const [submitting, setSubmitting] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const startRef = useRef(Date.now());
+  const timerRef = useRef();
+
+  useEffect(() => {
+    api.get(`/student/tests/${test._id}/start`)
+      .then(d => { setData(d.test); setTimeLeft(d.test.duration * 60); })
+      .catch(e => { toast(e.message, 'e'); onCancel(); })
+      .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    if (!data) return;
+    timerRef.current = setInterval(() => {
+      setTimeLeft(t => {
+        if (t <= 1) { clearInterval(timerRef.current); doSubmit(true); return 0; }
+        return t - 1;
+      });
+    }, 1000);
+    return () => clearInterval(timerRef.current);
+  }, [data]);
+
+  const doSubmit = useCallback(async (auto = false) => {
+    if (submitting) return;
+    clearInterval(timerRef.current);
+    setSubmitting(true);
+    try {
+      const ansArr = data.questions.map(q => ({ questionId: q._id, selected: answers[q._id] ?? -1 }));
+      const timeTaken = Math.floor((Date.now() - startRef.current) / 1000);
+      const res = await api.post(`/student/tests/${data._id}/submit`, { answers: ansArr, timeTaken });
+      toast('Test submitted!', 's');
+      onDone(res.result);
+    } catch (e) { toast(e.message, 'e'); setSubmitting(false); }
+  }, [submitting, data, answers]);
+
+  const fmt = s => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`;
+
+  if (loading) return <div style={{ textAlign: 'center', padding: 100 }}><Spin size={48} /></div>;
+  if (!data) return null;
+
+  const curQ = data.questions[q];
+  const answered = Object.keys(answers).length;
+  const timerCls = timeLeft < 60 ? 'danger' : timeLeft < 300 ? 'warn' : '';
+
+  return (
+    <div>
+      <nav className="navbar">
+        <div className="nav-brand"><div className="nav-logo">A</div>{data.name}</div>
+        <div className="nav-right">
+          <div className={`timer ${timerCls}`}>⏱ {fmt(timeLeft)}</div>
+          <button className="btn btn-danger btn-sm" onClick={() => doSubmit(false)} disabled={submitting}>
+            {submitting ? <Spin /> : '🏁 Submit'}
+          </button>
+        </div>
+      </nav>
+      <div style={{ maxWidth: 780, margin: '0 auto', padding: '24px 20px' }}>
+        {/* Progress */}
+        <div style={{ marginBottom: 18 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: 'var(--muted)', marginBottom: 8 }}>
+            <span>{answered} of {data.questions.length} answered</span>
+            <span>{data.subject}</span>
+          </div>
+          <div className="progress"><div className="progress-fill" style={{ width: `${(answered / data.questions.length) * 100}%` }} /></div>
+        </div>
+        {/* Q dots */}
+        <div className="q-nav">
+          {data.questions.map((_, i) => (
+            <button key={i} className={`q-dot ${answers[data.questions[i]._id] !== undefined ? 'ans' : ''} ${i === q ? 'cur' : ''}`} onClick={() => setQ(i)}>{i + 1}</button>
+          ))}
+        </div>
+        {/* Question */}
+        <div className="card" style={{ padding: 26 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10 }}>Question {q + 1} of {data.questions.length}</div>
+          <div style={{ fontSize: 16, fontWeight: 600, lineHeight: 1.6, marginBottom: 22 }}>{curQ.question}</div>
+          {curQ.options.map((opt, i) => (
+            <button key={i} className={`option ${answers[curQ._id] === i ? 'sel' : ''}`}
+              onClick={() => setAnswers(a => ({ ...a, [curQ._id]: i }))}>
+              <span className="opt-ltr">{['A','B','C','D'][i]}</span>{opt}
+            </button>
+          ))}
+        </div>
+        {/* Nav */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 16, gap: 10 }}>
+          <div style={{ display: 'flex', gap: 10 }}>
+            {q > 0 && <button className="btn btn-secondary" onClick={() => setQ(q => q - 1)}>← Prev</button>}
+            {q < data.questions.length - 1 && <button className="btn btn-secondary" onClick={() => setQ(q => q + 1)}>Next →</button>}
+          </div>
+          <button className="btn btn-primary" onClick={() => doSubmit(false)} disabled={submitting}>
+            {submitting ? <Spin /> : '🏁 Submit Test'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ── Result Detail ─────────────────────────────────────────────────────────────
+const ResultDetail = ({ result, onBack }) => {
+  const [data, setData] = useState(null);
+  useEffect(() => {
+    api.get(`/student/results/${result._id}`).then(setData).catch(e => toast(e.message, 'e'));
+  }, [result._id]);
+
+  const color = result.score >= 70 ? 'var(--green)' : result.score >= 40 ? 'var(--amber)' : 'var(--red)';
+
+  return (
+    <div>
+      <nav className="navbar">
+        <div className="nav-brand"><div className="nav-logo">A</div>Test Result</div>
+        <div className="nav-right"><button className="btn btn-secondary btn-sm" onClick={onBack}>← Back</button></div>
+      </nav>
+      <div style={{ maxWidth: 780, margin: '0 auto', padding: '28px 20px' }} className="fade-in">
+        <div className="card" style={{ padding: 32, textAlign: 'center', marginBottom: 24 }}>
+          <div className="score-ring" style={{ borderColor: color }}>
+            <div className="score-num" style={{ color }}>{result.score}%</div>
+            <div className="score-label">Score</div>
+          </div>
+          <h2>{result.score >= 70 ? '🎉 Great Job!' : result.score >= 40 ? '👍 Good Effort!' : '💪 Keep Practicing!'}</h2>
+          <p style={{ color: 'var(--muted)', marginTop: 6 }}>{result.correctAnswers} correct out of {result.totalQuestions}</p>
+          {result.timeTaken && <p style={{ color: 'var(--muted)', fontSize: 13, marginTop: 4 }}>Time: {Math.floor(result.timeTaken / 60)}m {result.timeTaken % 60}s</p>}
+        </div>
+
+        {data?.review && (
+          <div>
+            <h3 style={{ marginBottom: 16 }}>Answer Review</h3>
+            {data.review.map((r, i) => (
+              <div key={i} className={`review-card ${r.isCorrect ? 'review-correct' : 'review-wrong'}`}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
+                  <span style={{ fontWeight: 600, fontSize: 14 }}>Q{i + 1}. {r.question}</span>
+                  <span style={{ color: r.isCorrect ? 'var(--green)' : 'var(--red)', fontWeight: 700 }}>{r.isCorrect ? '✓' : '✗'}</span>
+                </div>
+                {r.options.map((opt, j) => (
+                  <div key={j} style={{
+                    padding: '8px 12px', borderRadius: 8, marginBottom: 5, fontSize: 13,
+                    background: j === r.correctAnswer ? 'rgba(16,185,129,.1)' : j === r.selectedAnswer && !r.isCorrect ? 'rgba(239,68,68,.08)' : 'var(--surface2)',
+                    border: `1px solid ${j === r.correctAnswer ? 'rgba(16,185,129,.3)' : j === r.selectedAnswer && !r.isCorrect ? 'rgba(239,68,68,.3)' : 'var(--border)'}`,
+                    color: j === r.correctAnswer ? '#34d399' : j === r.selectedAnswer && !r.isCorrect ? '#f87171' : 'var(--text)',
+                  }}>
+                    {['A','B','C','D'][j]}. {opt}
+                    {j === r.correctAnswer && <span style={{ marginLeft: 8, fontSize: 11 }}>✓ Correct</span>}
+                    {j === r.selectedAnswer && j !== r.correctAnswer && <span style={{ marginLeft: 8, fontSize: 11 }}>Your answer</span>}
+                  </div>
+                ))}
+                {r.explanation && <div style={{ marginTop: 10, padding: '8px 12px', background: 'rgba(124,58,237,.1)', borderRadius: 8, fontSize: 13, color: '#a78bfa' }}>💡 {r.explanation}</div>}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const StudentExtTests = () => {
+  const [tests, setTests] = useState([]);
+  useEffect(() => { api.get('/student/external-tests').then(d => setTests(d.tests)).catch(e => toast(e.message,'e')); }, []);
+  const icons = { googleform: '📋', pdf: '📄', image: '🖼', link: '🔗' };
+
+  return (
+    <div className="fade-in">
+      <div className="page-hdr"><div><h1 className="page-title">External Tests</h1><p className="page-sub">Google Forms, PDFs, and more</p></div></div>
+      {tests.length === 0
+        ? <div className="empty"><div className="empty-icon">📋</div><div className="empty-txt">No external tests yet</div></div>
+        : tests.map(t => (
+          <div key={t._id} className="ext-card" style={{ marginBottom: 12 }}>
+            <div style={{ flex: 1 }}>
+              <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
+                <span className="badge b-amber">{icons[t.type] || '🔗'} {t.type}</span>
+                <ClassBadge cls={t.class} />
+              </div>
+              <div style={{ fontWeight: 700, fontSize: 15 }}>{t.title}</div>
+              {t.description && <div style={{ color: 'var(--muted)', fontSize: 13, marginTop: 4 }}>{t.description}</div>}
+            </div>
+            <a href={t.url} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-sm">Open →</a>
+          </div>
+        ))
+      }
+    </div>
+  );
+};
+
+const StudentNotes = () => {
+  const [notes, setNotes] = useState([]);
+  const [search, setSearch] = useState('');
+  useEffect(() => { api.get('/student/notes').then(d => setNotes(d.notes)).catch(e => toast(e.message,'e')); }, []);
+  const typeIcons = { pdf: '📄', text: '📝', image: '🖼', googleform: '📋', link: '🔗' };
+  const filtered = notes.filter(n => n.title.toLowerCase().includes(search.toLowerCase()) || n.subject.toLowerCase().includes(search.toLowerCase()));
+
+  return (
+    <div className="fade-in">
+      <div className="page-hdr"><div><h1 className="page-title">Study Notes</h1><p className="page-sub">{notes.length} notes available</p></div></div>
+      <div className="filter-bar">
+        <div className="search-wrap">
+          <span className="search-icon">🔍</span>
+          <input className="input" placeholder="Search notes..." value={search} onChange={e => setSearch(e.target.value)} />
+        </div>
+      </div>
+      {filtered.length === 0
+        ? <div className="empty"><div className="empty-icon">📚</div><div className="empty-txt">No notes found</div></div>
+        : (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(280px,1fr))', gap: 14 }}>
+            {filtered.map(n => (
+              <div key={n._id} className="note-card card">
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
+                  <span className="badge b-purple">{n.subject}</span>
+                  <span className="badge b-gray">{typeIcons[n.type]} {n.type.toUpperCase()}</span>
+                </div>
+                <h3 style={{ fontSize: 15, marginBottom: 6 }}>{n.title}</h3>
+                {n.description && <p style={{ color: 'var(--muted)', fontSize: 13, marginBottom: 14 }}>{n.description}</p>}
+                {n.type === 'text'
+                  ? <div style={{ padding: '10px 14px', background: 'var(--surface2)', borderRadius: 8, fontSize: 13, lineHeight: 1.6, fontFamily: 'JetBrains Mono', maxHeight: 120, overflow: 'auto' }}>{n.file_url}</div>
+                  : <a href={n.file_url} target="_blank" rel="noopener noreferrer" className="btn btn-secondary" style={{ width: '100%', justifyContent: 'center', textDecoration: 'none', marginTop: 8 }}>⬇ Open / Download</a>
+                }
+              </div>
+            ))}
+          </div>
+        )
+      }
+    </div>
+  );
+};
+
+const StudentResults = ({ onView }) => {
+  const [results, setResults] = useState([]);
+  useEffect(() => { api.get('/student/results').then(d => setResults(d.results)).catch(e => toast(e.message,'e')); }, []);
+
+  return (
+    <div className="fade-in">
+      <div className="page-hdr"><div><h1 className="page-title">My Results</h1><p className="page-sub">{results.length} tests completed</p></div></div>
+      {results.length === 0
+        ? <div className="empty"><div className="empty-icon">📊</div><div className="empty-txt">No results yet</div><div className="empty-sub">Complete a test to see your results here</div></div>
+        : (
+          <div className="tbl-wrap">
+            <table>
+              <thead><tr><th>Test</th><th>Subject</th><th>Score</th><th>Correct</th><th>Date</th><th>Review</th></tr></thead>
+              <tbody>
+                {results.map(r => (
+                  <tr key={r._id}>
+                    <td style={{ fontWeight: 600 }}>{r.test?.name}</td>
+                    <td><span className="badge b-purple">{r.test?.subject}</span></td>
+                    <td><span style={{ fontFamily: 'JetBrains Mono', fontWeight: 800, fontSize: 16, color: r.score >= 70 ? 'var(--green)' : r.score >= 40 ? 'var(--amber)' : 'var(--red)' }}>{r.score}%</span></td>
+                    <td style={{ color: 'var(--muted)' }}>{r.correctAnswers}/{r.totalQuestions}</td>
+                    <td style={{ color: 'var(--muted)', fontSize: 12 }}>{new Date(r.submittedAt).toLocaleDateString()}</td>
+                    <td><button className="btn btn-secondary btn-xs" onClick={() => onView(r)}>Review</button></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )
+      }
+    </div>
+  );
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ADMIN DASHBOARD
+// ─────────────────────────────────────────────────────────────────────────────
+const AdminDash = () => {
+  const { user, logout } = useAuth();
+  const [page, setPage] = useState('overview');
+  const [testEditor, setTestEditor] = useState(null); // null | {test, isEdit}
+
+  const navSections = [
+    { label: 'Dashboard', items: [{ id: 'overview', icon: '🏠', label: 'Overview' }] },
+    { label: 'Management', items: [
+      { id: 'students',   icon: '👥', label: 'Students' },
+      { id: 'tests',      icon: '📝', label: 'MCQ Tests' },
+      { id: 'ext-tests',  icon: '📋', label: 'External Tests' },
+      { id: 'notes',      icon: '📚', label: 'Study Notes' },
+    ]},
+    { label: 'Reports', items: [{ id: 'results', icon: '📊', label: 'Results' }] },
+  ];
+
+  if (testEditor) return <AdminTestEditor {...testEditor} onDone={() => setTestEditor(null)} />;
+
+  return (
+    <div>
+      <nav className="navbar">
+        <div className="nav-brand"><div className="nav-logo">A</div>ABC Coaching <span className="badge b-amber" style={{ marginLeft: 8 }}>Admin</span></div>
+        <div className="nav-right">
+          <span style={{ fontSize: 13, fontWeight: 600 }}>{user.name}</span>
+          <button className="btn btn-secondary btn-sm" onClick={logout}>🚪 Logout</button>
+        </div>
+      </nav>
+      <div className="layout">
+        <aside className="sidebar">
+          {navSections.map(s => (
+            <div key={s.label}>
+              <div className="sidebar-section">{s.label}</div>
+              {s.items.map(n => (
+                <button key={n.id} className={`sidebar-item ${page === n.id ? 'active' : ''}`} onClick={() => setPage(n.id)}>
+                  <span className="s-icon">{n.icon}</span>{n.label}
+                </button>
+              ))}
+            </div>
+          ))}
+          <div style={{ flex: 1 }} />
+          <button className="sidebar-item" onClick={logout} style={{ color: 'var(--red)', marginTop: 8 }}>
+            <span className="s-icon">🚪</span>Logout
+          </button>
+        </aside>
+        <main className="main">
+          {page === 'overview'   && <AdminOverview />}
+          {page === 'students'   && <AdminStudents />}
+          {page === 'tests'      && <AdminTests onEdit={t => setTestEditor({ test: t, isEdit: true })} onNew={() => setTestEditor({ test: null, isEdit: false })} />}
+          {page === 'ext-tests'  && <AdminExtTests />}
+          {page === 'notes'      && <AdminNotes />}
+          {page === 'results'    && <AdminResults />}
+        </main>
+      </div>
+    </div>
+  );
+};
+
+const AdminOverview = () => {
+  const [stats, setStats] = useState(null);
+  useEffect(() => { api.get('/admin/stats').then(setStats).catch(() => {}); }, []);
+  if (!stats) return <div style={{ textAlign: 'center', padding: 80 }}><Spin size={44} /></div>;
+
+  return (
+    <div className="fade-in">
+      <div className="page-hdr"><div><h1 className="page-title">Dashboard Overview</h1><p className="page-sub">Platform statistics at a glance</p></div></div>
+      <div className="stats-grid">
+        {[
+          { label: 'Active Students', val: stats.students, color: 'var(--primary)' },
+          { label: 'MCQ Tests',       val: stats.tests,    color: 'var(--cyan)' },
+          { label: 'External Tests',  val: stats.extTests, color: 'var(--amber)' },
+          { label: 'Study Notes',     val: stats.notes,    color: 'var(--green)' },
+          { label: 'Total Results',   val: stats.results,  color: 'var(--red)' },
+        ].map((s, i) => (
+          <div key={i} className="stat-card"><div className="stat-num" style={{ color: s.color }}>{s.val}</div><div className="stat-lbl">{s.label}</div></div>
+        ))}
+      </div>
+      {stats.classCounts?.length > 0 && (
+        <div className="card" style={{ padding: 24 }}>
+          <h3 style={{ marginBottom: 16 }}>Students by Class</h3>
+          <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
+            {stats.classCounts.map(c => (
+              <div key={c._id} style={{ flex: 1, minWidth: 100, textAlign: 'center', padding: '20px 14px', background: 'var(--surface2)', borderRadius: 12, border: '1px solid var(--border)' }}>
+                <div style={{ fontFamily: 'JetBrains Mono', fontSize: 28, fontWeight: 800, color: 'var(--primary)' }}>{c.count}</div>
+                <div style={{ color: 'var(--muted)', fontSize: 13 }}>Class {c._id}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ── Admin Students ────────────────────────────────────────────────────────────
+const AdminStudents = () => {
+  const [students, setStudents] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [modal, setModal] = useState(null);
+  const [confirm, setConfirm] = useState(null);
+  const [filter, setFilter] = useState({ class: '', search: '' });
+  const [form, setForm] = useState({ name: '', username: '', password: '', class: '' });
+  const [saving, setSaving] = useState(false);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const q = new URLSearchParams({ page, limit: 20, ...(filter.class && { class: filter.class }), ...(filter.search && { search: filter.search }) });
+      const d = await api.get(`/admin/students?${q}`);
+      setStudents(d.students); setTotal(d.total); setTotalPages(d.totalPages);
+    } catch (e) { toast(e.message, 'e'); }
+    finally { setLoading(false); }
+  }, [page, filter]);
+
+  useEffect(() => { load(); }, [load]);
+
+  const openAdd = () => { setForm({ name: '', username: '', password: '', class: '' }); setModal('add'); };
+  const openEdit = (s) => { setForm({ name: s.name, class: s.class, password: '' }); setModal({ type: 'edit', id: s._id }); };
+
+  const save = async () => {
+    setSaving(true);
+    try {
+      if (modal === 'add') {
+        if (!form.name || !form.username || !form.password || !form.class) { toast('All fields required', 'w'); return; }
+        await api.post('/admin/students', { ...form, class: parseInt(form.class) });
+        toast('Student created', 's');
+      } else {
+        const upd = { name: form.name, class: parseInt(form.class) };
+        if (form.password) upd.password = form.password;
+        await api.put(`/admin/students/${modal.id}`, upd);
+        toast('Updated', 's');
+      }
+      setModal(null); load();
+    } catch (e) { toast(e.message, 'e'); }
+    finally { setSaving(false); }
+  };
+
+  const toggleHide = async (s) => {
+    await api.patch(`/admin/students/${s._id}/toggle`).catch(e => toast(e.message,'e'));
+    load();
+  };
+
+  const del = async (id) => {
+    await api.del(`/admin/students/${id}`).then(() => toast('Deleted','s')).catch(e => toast(e.message,'e'));
+    setConfirm(null); load();
+  };
+
+  return (
+    <div className="fade-in">
+      <div className="page-hdr">
+        <div><h1 className="page-title">Students</h1><p className="page-sub">{total} total students</p></div>
+        <button className="btn btn-primary" onClick={openAdd}>➕ Add Student</button>
+      </div>
+      <div className="filter-bar">
+        <div className="search-wrap" style={{ flex: 1, maxWidth: 320 }}>
+          <span className="search-icon">🔍</span>
+          <input className="input" placeholder="Search name or username..." value={filter.search} onChange={e => setFilter(f => ({ ...f, search: e.target.value }))} />
+        </div>
+        <select className="input" style={{ width: 140 }} value={filter.class} onChange={e => setFilter(f => ({ ...f, class: e.target.value }))}>
+          <option value="">All Classes</option>
+          {[9,10,11,12].map(c => <option key={c} value={c}>Class {c}</option>)}
+        </select>
+      </div>
+      {loading ? <div style={{ textAlign: 'center', padding: 60 }}><Spin size={40} /></div> : (
+        <div className="tbl-wrap">
+          <table>
+            <thead><tr><th>Name</th><th>Username</th><th>Class</th><th>Status</th><th>Visible</th><th>Actions</th></tr></thead>
+            <tbody>
+              {students.map(s => (
+                <tr key={s._id}>
+                  <td style={{ fontWeight: 600 }}>{s.name}</td>
+                  <td style={{ fontFamily: 'JetBrains Mono', fontSize: 13, color: 'var(--muted)' }}>{s.username}</td>
+                  <td><ClassBadge cls={s.class} /></td>
+                  <td><span className={`badge ${s.hidden ? 'b-red' : 'b-green'}`}>{s.hidden ? 'Hidden' : 'Active'}</span></td>
+                  <td><ToggleSwitch checked={!s.hidden} onChange={() => toggleHide(s)} /></td>
+                  <td>
+                    <div style={{ display: 'flex', gap: 6 }}>
+                      <button className="btn btn-secondary btn-xs" onClick={() => openEdit(s)}>✏️</button>
+                      <button className="btn btn-danger btn-xs" onClick={() => setConfirm(s._id)}>🗑</button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {students.length === 0 && <tr><td colSpan={6} style={{ textAlign: 'center', padding: 40, color: 'var(--muted)' }}>No students found</td></tr>}
+            </tbody>
+          </table>
+        </div>
+      )}
+      <Pagination page={page} totalPages={totalPages} onChange={setPage} />
+
+      {modal && (
+        <Modal title={modal === 'add' ? '➕ Add Student' : '✏️ Edit Student'} onClose={() => setModal(null)}
+          actions={<><button className="btn btn-secondary" onClick={() => setModal(null)}>Cancel</button><button className="btn btn-primary" onClick={save} disabled={saving}>{saving ? <Spin /> : 'Save'}</button></>}>
+          <div className="form-row">
+            <div className="form-group"><label className="label">Full Name *</label><input className="input" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="Student's full name" /></div>
+            {modal === 'add' && <div className="form-group"><label className="label">Username / ID *</label><input className="input" value={form.username} onChange={e => setForm(f => ({ ...f, username: e.target.value }))} placeholder="e.g. arjun9" /></div>}
+          </div>
+          <div className="form-row">
+            <div className="form-group"><label className="label">Password {modal !== 'add' && '(blank = keep)'}</label><input type="password" className="input" value={form.password} onChange={e => setForm(f => ({ ...f, password: e.target.value }))} placeholder="Password" /></div>
+            <div className="form-group"><label className="label">Class *</label>
+              <select className="input" value={form.class} onChange={e => setForm(f => ({ ...f, class: e.target.value }))}>
+                <option value="">Select Class</option>
+                {[9,10,11,12].map(c => <option key={c} value={c}>Class {c}</option>)}
+              </select>
+            </div>
+          </div>
+        </Modal>
+      )}
+      {confirm && <Confirm msg="Delete this student and all their results?" onYes={() => del(confirm)} onNo={() => setConfirm(null)} />}
+    </div>
+  );
+};
+
+// ── Admin Tests ───────────────────────────────────────────────────────────────
+const AdminTests = ({ onEdit, onNew }) => {
+  const [tests, setTests] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState('');
+  const [confirm, setConfirm] = useState(null);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    const q = new URLSearchParams({ page, limit: 15, ...(filter && { class: filter }) });
+    const d = await api.get(`/admin/tests?${q}`).catch(e => { toast(e.message,'e'); return { tests: [], total: 0, totalPages: 1 }; });
+    setTests(d.tests); setTotal(d.total); setTotalPages(d.totalPages); setLoading(false);
+  }, [page, filter]);
+
+  useEffect(() => { load(); }, [load]);
+
+  const toggle = async (t) => {
+    await api.patch(`/admin/tests/${t._id}/toggle`).catch(e => toast(e.message,'e'));
+    load();
+  };
+
+  const del = async (id) => {
+    await api.del(`/admin/tests/${id}`).then(() => toast('Deleted','s')).catch(e => toast(e.message,'e'));
+    setConfirm(null); load();
+  };
+
+  const handleEdit = async (t) => {
+    const full = await api.get(`/admin/tests/${t._id}`).catch(e => { toast(e.message,'e'); return null; });
+    if (full) onEdit(full.test);
+  };
+
+  return (
+    <div className="fade-in">
+      <div className="page-hdr">
+        <div><h1 className="page-title">MCQ Tests</h1><p className="page-sub">{total} tests total</p></div>
+        <button className="btn btn-primary" onClick={onNew}>➕ Create Test</button>
+      </div>
+      <div className="filter-bar">
+        <select className="input" style={{ width: 160 }} value={filter} onChange={e => setFilter(e.target.value)}>
+          <option value="">All Classes</option>
+          {[9,10,11,12].map(c => <option key={c} value={c}>Class {c}</option>)}
+        </select>
+      </div>
+      {loading ? <div style={{ textAlign: 'center', padding: 60 }}><Spin size={40} /></div> : (
+        <div className="tbl-wrap">
+          <table>
+            <thead><tr><th>Name</th><th>Subject</th><th>Class</th><th>Duration</th><th>Questions</th><th>Visibility</th><th>Actions</th></tr></thead>
+            <tbody>
+              {tests.map(t => (
+                <tr key={t._id}>
+                  <td style={{ fontWeight: 600, maxWidth: 220 }}>{t.name}</td>
+                  <td><span className="badge b-purple">{t.subject}</span></td>
+                  <td><ClassBadge cls={t.class} /></td>
+                  <td style={{ color: 'var(--muted)' }}>{t.duration} min</td>
+                  <td style={{ color: 'var(--muted)', fontFamily: 'JetBrains Mono' }}>{t.questions?.length || 0}</td>
+                  <td>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <ToggleSwitch checked={!t.hidden} onChange={() => toggle(t)} />
+                      <span className={`badge ${t.hidden ? 'b-red' : 'b-green'}`} style={{ fontSize: 10 }}>{t.hidden ? 'Hidden' : 'Visible'}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div style={{ display: 'flex', gap: 6 }}>
+                      <button className="btn btn-secondary btn-xs" onClick={() => handleEdit(t)}>✏️ Edit</button>
+                      <button className="btn btn-danger btn-xs" onClick={() => setConfirm(t._id)}>🗑</button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {tests.length === 0 && <tr><td colSpan={7} style={{ textAlign: 'center', padding: 40, color: 'var(--muted)' }}>No tests yet</td></tr>}
+            </tbody>
+          </table>
+        </div>
+      )}
+      <Pagination page={page} totalPages={totalPages} onChange={setPage} />
+      {confirm && <Confirm msg="Delete this test? All results will also be deleted." onYes={() => del(confirm)} onNo={() => setConfirm(null)} />}
+    </div>
+  );
+};
+
+// ── Test Editor ───────────────────────────────────────────────────────────────
+const AdminTestEditor = ({ test, isEdit, onDone }) => {
+  const [meta, setMeta] = useState({ name: test?.name||'', class: test?.class||'', subject: test?.subject||'', duration: test?.duration||30 });
+  const [questions, setQuestions] = useState(test?.questions?.length
+    ? test.questions.map(q => ({ question: q.question, options: [...q.options], answer: q.answer, explanation: q.explanation||'' }))
+    : [{ question: '', options: ['','','',''], answer: 0, explanation: '' }]
+  );
+  const [saving, setSaving] = useState(false);
+
+  const addQ = () => setQuestions(q => [...q, { question: '', options: ['','','',''], answer: 0, explanation: '' }]);
+  const delQ = (i) => setQuestions(q => q.filter((_, j) => j !== i));
+  const updQ = (i, k, v) => setQuestions(q => q.map((x, j) => j === i ? { ...x, [k]: v } : x));
+  const updOpt = (qi, oi, v) => setQuestions(q => q.map((x, j) => j === qi ? { ...x, options: x.options.map((o, k) => k === oi ? v : o) } : x));
+
+  const save = async () => {
+    if (!meta.name || !meta.class || !meta.subject || !meta.duration) { toast('Fill all test fields', 'w'); return; }
+    for (const q of questions) {
+      if (!q.question) { toast('All questions need text', 'w'); return; }
+      if (q.options.some(o => !o)) { toast('Fill all 4 options for each question', 'w'); return; }
+    }
+    setSaving(true);
+    try {
+      const payload = { ...meta, class: parseInt(meta.class), duration: parseInt(meta.duration), questions };
+      if (isEdit) await api.put(`/admin/tests/${test._id}`, payload);
+      else await api.post('/admin/tests', payload);
+      toast(isEdit ? 'Test updated' : 'Test created', 's');
+      onDone();
+    } catch (e) { toast(e.message, 'e'); }
+    finally { setSaving(false); }
+  };
+
+  return (
+    <div className="fade-in" style={{ maxWidth: 860 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 22, flexWrap: 'wrap', gap: 12 }}>
+        <h1 className="page-title">{isEdit ? '✏️ Edit' : '➕ Create'} MCQ Test</h1>
+        <div style={{ display: 'flex', gap: 10 }}>
+          <button className="btn btn-secondary" onClick={onDone}>Cancel</button>
+          <button className="btn btn-primary" onClick={save} disabled={saving}>{saving ? <Spin /> : '💾 Save Test'}</button>
+        </div>
+      </div>
+
+      <div className="card" style={{ padding: 24, marginBottom: 22 }}>
+        <h3 style={{ marginBottom: 18 }}>Test Details</h3>
+        <div className="form-row">
+          <div className="form-group"><label className="label">Test Name *</label><input className="input" value={meta.name} onChange={e => setMeta(m => ({ ...m, name: e.target.value }))} placeholder="e.g. Chapter 5 Mock Test" /></div>
+          <div className="form-group"><label className="label">Subject *</label><input className="input" value={meta.subject} onChange={e => setMeta(m => ({ ...m, subject: e.target.value }))} placeholder="e.g. Physics" /></div>
+        </div>
+        <div className="form-row">
+          <div className="form-group"><label className="label">Class *</label>
+            <select className="input" value={meta.class} onChange={e => setMeta(m => ({ ...m, class: e.target.value }))}>
+              <option value="">Select Class</option>
+              {[9,10,11,12].map(c => <option key={c} value={c}>Class {c}</option>)}
+            </select>
+          </div>
+          <div className="form-group"><label className="label">Duration (minutes) *</label><input type="number" min={1} max={300} className="input" value={meta.duration} onChange={e => setMeta(m => ({ ...m, duration: e.target.value }))} /></div>
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+        <h3>{questions.length} Question{questions.length !== 1 ? 's' : ''}</h3>
+        <button className="btn btn-secondary btn-sm" onClick={addQ}>➕ Add Question</button>
+      </div>
+
+      {questions.map((q, qi) => (
+        <div key={qi} className="q-editor">
+          <div className="q-editor-hdr">
+            <span className="badge b-purple">Q{qi + 1}</span>
+            {questions.length > 1 && <button className="btn btn-danger btn-xs" onClick={() => delQ(qi)}>🗑 Remove</button>}
+          </div>
+          <div className="form-group">
+            <label className="label">Question Text *</label>
+            <textarea className="input" rows={2} value={q.question} onChange={e => updQ(qi, 'question', e.target.value)} placeholder="Enter the question..." />
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 12 }}>
+            {q.options.map((opt, oi) => (
+              <div key={oi} className="opt-row">
+                <input type="radio" className="opt-radio" name={`correct-${qi}`} checked={q.answer === oi} onChange={() => updQ(qi, 'answer', oi)} title="Mark as correct" />
+                <input className="input" value={opt} onChange={e => updOpt(qi, oi, e.target.value)}
+                  placeholder={`Option ${['A','B','C','D'][oi]}${q.answer === oi ? ' (correct)' : ''}`}
+                  style={{ borderColor: q.answer === oi ? 'var(--green)' : undefined }} />
+              </div>
+            ))}
+          </div>
+          <div className="form-group" style={{ marginBottom: 0 }}>
+            <label className="label">Explanation (optional)</label>
+            <input className="input" value={q.explanation} onChange={e => updQ(qi, 'explanation', e.target.value)} placeholder="Explain the correct answer..." />
+          </div>
+        </div>
+      ))}
+
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8, gap: 10 }}>
+        <button className="btn btn-secondary" onClick={addQ}>➕ Add Question</button>
+        <button className="btn btn-primary" onClick={save} disabled={saving}>{saving ? <Spin /> : '💾 Save Test'}</button>
+      </div>
+    </div>
+  );
+};
+
+// ── Admin External Tests ──────────────────────────────────────────────────────
+const AdminExtTests = () => {
+  const [tests, setTests] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [modal, setModal] = useState(false);
+  const [confirm, setConfirm] = useState(null);
+  const [form, setForm] = useState({ title: '', class: '', type: 'googleform', url: '', description: '' });
+  const [file, setFile] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [filter, setFilter] = useState('');
+  const typeIcons = { googleform: '📋', pdf: '📄', image: '🖼', link: '🔗' };
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    const q = new URLSearchParams({ page, limit: 15, ...(filter && { class: filter }) });
+    const d = await api.get(`/admin/external-tests?${q}`).catch(() => ({ tests: [], total: 0, totalPages: 1 }));
+    setTests(d.tests); setTotal(d.total); setTotalPages(d.totalPages); setLoading(false);
+  }, [page, filter]);
+  useEffect(() => { load(); }, [load]);
+
+  const save = async () => {
+    if (!form.title || !form.class || !form.type) { toast('Fill required fields', 'w'); return; }
+    if (!form.url && !file) { toast('Provide a URL or upload a file', 'w'); return; }
+    setSaving(true);
+    try {
+      const fd = new FormData();
+      Object.entries(form).forEach(([k, v]) => fd.append(k, v));
+      if (file) fd.append('file', file);
+      await api.form('/admin/external-tests', fd);
+      toast('External test added', 's');
+      setModal(false); setForm({ title: '', class: '', type: 'googleform', url: '', description: '' }); setFile(null);
+      load();
+    } catch (e) { toast(e.message, 'e'); }
+    finally { setSaving(false); }
+  };
+
+  const toggle = async (t) => { await api.patch(`/admin/external-tests/${t._id}/toggle`).catch(e => toast(e.message,'e')); load(); };
+  const del = async (id) => { await api.del(`/admin/external-tests/${id}`).then(() => toast('Deleted','s')).catch(e => toast(e.message,'e')); setConfirm(null); load(); };
+
+  return (
+    <div className="fade-in">
+      <div className="page-hdr">
+        <div><h1 className="page-title">External Tests</h1><p className="page-sub">{total} external tests</p></div>
+        <button className="btn btn-primary" onClick={() => setModal(true)}>➕ Add External Test</button>
+      </div>
+      <div className="filter-bar">
+        <select className="input" style={{ width: 160 }} value={filter} onChange={e => setFilter(e.target.value)}>
+          <option value="">All Classes</option>
+          {[9,10,11,12].map(c => <option key={c} value={c}>Class {c}</option>)}
+        </select>
+      </div>
+      {loading ? <div style={{ textAlign: 'center', padding: 60 }}><Spin size={40} /></div> : (
+        <div className="tbl-wrap">
+          <table>
+            <thead><tr><th>Title</th><th>Type</th><th>Class</th><th>Visibility</th><th>Actions</th></tr></thead>
+            <tbody>
+              {tests.map(t => (
+                <tr key={t._id}>
+                  <td style={{ fontWeight: 600 }}>{t.title}</td>
+                  <td><span className="badge b-amber">{typeIcons[t.type]} {t.type}</span></td>
+                  <td><ClassBadge cls={t.class} /></td>
+                  <td>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <ToggleSwitch checked={!t.hidden} onChange={() => toggle(t)} />
+                      <span className={`badge ${t.hidden ? 'b-red' : 'b-green'}`} style={{ fontSize: 10 }}>{t.hidden ? 'Hidden' : 'Visible'}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div style={{ display: 'flex', gap: 6 }}>
+                      <a href={t.url} target="_blank" rel="noopener noreferrer" className="btn btn-secondary btn-xs">🔗 Open</a>
+                      <button className="btn btn-danger btn-xs" onClick={() => setConfirm(t._id)}>🗑</button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {tests.length === 0 && <tr><td colSpan={5} style={{ textAlign: 'center', padding: 40, color: 'var(--muted)' }}>No external tests yet</td></tr>}
+            </tbody>
+          </table>
+        </div>
+      )}
+      <Pagination page={page} totalPages={totalPages} onChange={setPage} />
+
+      {modal && (
+        <Modal title="📋 Add External Test" onClose={() => setModal(false)}
+          actions={<><button className="btn btn-secondary" onClick={() => setModal(false)}>Cancel</button><button className="btn btn-primary" onClick={save} disabled={saving}>{saving ? <Spin /> : 'Add'}</button></>}>
+          <div className="form-group"><label className="label">Title *</label><input className="input" value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} placeholder="Test title" /></div>
+          <div className="form-row">
+            <div className="form-group"><label className="label">Type *</label>
+              <select className="input" value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value }))}>
+                {['googleform','pdf','image','link'].map(t => <option key={t} value={t}>{typeIcons[t]} {t}</option>)}
+              </select>
+            </div>
+            <div className="form-group"><label className="label">Class *</label>
+              <select className="input" value={form.class} onChange={e => setForm(f => ({ ...f, class: e.target.value }))}>
+                <option value="">Select</option>
+                {[9,10,11,12].map(c => <option key={c} value={c}>Class {c}</option>)}
+              </select>
+            </div>
+          </div>
+          <div className="form-group"><label className="label">URL (or upload file below)</label><input className="input" value={form.url} onChange={e => setForm(f => ({ ...f, url: e.target.value }))} placeholder="https://..." /></div>
+          <div className="form-group"><label className="label">OR Upload File (PDF/Image · max 25MB)</label><input type="file" className="input" accept=".pdf,.jpg,.jpeg,.png" onChange={e => setFile(e.target.files[0])} style={{ padding: 8 }} />{file && <div style={{ fontSize: 12, color: 'var(--green)', marginTop: 5 }}>✓ {file.name}</div>}</div>
+          <div className="form-group"><label className="label">Description</label><textarea className="input" rows={2} value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} placeholder="Optional description..." /></div>
+        </Modal>
+      )}
+      {confirm && <Confirm msg="Delete this external test?" onYes={() => del(confirm)} onNo={() => setConfirm(null)} />}
+    </div>
+  );
+};
+
+// ── Admin Notes ───────────────────────────────────────────────────────────────
+const AdminNotes = () => {
+  const [notes, setNotes] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [modal, setModal] = useState(null);
+  const [confirm, setConfirm] = useState(null);
+  const [filter, setFilter] = useState('');
+  const [form, setForm] = useState({ title: '', class: '', subject: '', type: 'pdf', description: '', url: '', text: '' });
+  const [file, setFile] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const typeIcons = { pdf: '📄', text: '📝', image: '🖼', googleform: '📋', link: '🔗' };
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    const q = new URLSearchParams({ page, limit: 15, ...(filter && { class: filter }) });
+    const d = await api.get(`/admin/notes?${q}`).catch(() => ({ notes: [], total: 0, totalPages: 1 }));
+    setNotes(d.notes); setTotal(d.total); setTotalPages(d.totalPages); setLoading(false);
+  }, [page, filter]);
+  useEffect(() => { load(); }, [load]);
+
+  const openAdd = () => { setForm({ title: '', class: '', subject: '', type: 'pdf', description: '', url: '', text: '' }); setFile(null); setModal('add'); };
+  const openEdit = (n) => { setForm({ title: n.title, class: n.class, subject: n.subject, type: n.type, description: n.description||'', url: n.file_url||'', text: n.type==='text'?n.file_url:'' }); setFile(null); setModal({ type: 'edit', id: n._id }); };
+
+  const save = async () => {
+    if (!form.title || !form.class || !form.subject || !form.type) { toast('Fill required fields', 'w'); return; }
+    setSaving(true);
+    try {
+      const fd = new FormData();
+      fd.append('title', form.title);
+      fd.append('class', form.class);
+      fd.append('subject', form.subject);
+      fd.append('type', form.type);
+      fd.append('description', form.description);
+      if (form.type === 'text') fd.append('url', form.text);
+      else if (file) { /* handled by file upload */ }
+      else if (form.url) fd.append('url', form.url);
+      if (file) fd.append('file', file);
+
+      if (modal === 'add') await api.form('/admin/notes', fd);
+      else await api.formPut(`/admin/notes/${modal.id}`, fd);
+      toast(modal === 'add' ? 'Note added' : 'Note updated', 's');
+      setModal(null); load();
+    } catch (e) { toast(e.message, 'e'); }
+    finally { setSaving(false); }
+  };
+
+  const toggle = async (n) => { await api.patch(`/admin/notes/${n._id}/toggle`).catch(e => toast(e.message,'e')); load(); };
+  const del = async (id) => { await api.del(`/admin/notes/${id}`).then(() => toast('Deleted','s')).catch(e => toast(e.message,'e')); setConfirm(null); load(); };
+
+  return (
+    <div className="fade-in">
+      <div className="page-hdr">
+        <div><h1 className="page-title">Study Notes</h1><p className="page-sub">{total} notes</p></div>
+        <button className="btn btn-primary" onClick={openAdd}>➕ Upload Note</button>
+      </div>
+      <div className="filter-bar">
+        <select className="input" style={{ width: 160 }} value={filter} onChange={e => setFilter(e.target.value)}>
+          <option value="">All Classes</option>
+          {[9,10,11,12].map(c => <option key={c} value={c}>Class {c}</option>)}
+        </select>
+      </div>
+      {loading ? <div style={{ textAlign: 'center', padding: 60 }}><Spin size={40} /></div> : (
+        <div className="tbl-wrap">
+          <table>
+            <thead><tr><th>Title</th><th>Subject</th><th>Type</th><th>Class</th><th>Visibility</th><th>Actions</th></tr></thead>
+            <tbody>
+              {notes.map(n => (
+                <tr key={n._id}>
+                  <td style={{ fontWeight: 600, maxWidth: 200 }}>{n.title}</td>
+                  <td><span className="badge b-purple">{n.subject}</span></td>
+                  <td><span className="badge b-gray">{typeIcons[n.type]} {n.type}</span></td>
+                  <td><ClassBadge cls={n.class} /></td>
+                  <td>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <ToggleSwitch checked={!n.hidden} onChange={() => toggle(n)} />
+                      <span className={`badge ${n.hidden ? 'b-red' : 'b-green'}`} style={{ fontSize: 10 }}>{n.hidden ? 'Hidden' : 'Visible'}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div style={{ display: 'flex', gap: 6 }}>
+                      <button className="btn btn-secondary btn-xs" onClick={() => openEdit(n)}>✏️</button>
+                      <button className="btn btn-danger btn-xs" onClick={() => setConfirm(n._id)}>🗑</button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {notes.length === 0 && <tr><td colSpan={6} style={{ textAlign: 'center', padding: 40, color: 'var(--muted)' }}>No notes yet</td></tr>}
+            </tbody>
+          </table>
+        </div>
+      )}
+      <Pagination page={page} totalPages={totalPages} onChange={setPage} />
+
+      {modal && (
+        <Modal title={modal === 'add' ? '📚 Add Note' : '✏️ Edit Note'} onClose={() => setModal(null)}
+          actions={<><button className="btn btn-secondary" onClick={() => setModal(null)}>Cancel</button><button className="btn btn-primary" onClick={save} disabled={saving}>{saving ? <Spin /> : 'Save'}</button></>}>
+          <div className="form-group"><label className="label">Title *</label><input className="input" value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} placeholder="Note title" /></div>
+          <div className="form-row">
+            <div className="form-group"><label className="label">Subject *</label><input className="input" value={form.subject} onChange={e => setForm(f => ({ ...f, subject: e.target.value }))} placeholder="e.g. Physics" /></div>
+            <div className="form-group"><label className="label">Class *</label>
+              <select className="input" value={form.class} onChange={e => setForm(f => ({ ...f, class: e.target.value }))}>
+                <option value="">Select</option>
+                {[9,10,11,12].map(c => <option key={c} value={c}>Class {c}</option>)}
+              </select>
+            </div>
+          </div>
+          <div className="form-row">
+            <div className="form-group"><label className="label">Type *</label>
+              <select className="input" value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value }))}>
+                {['pdf','text','image','googleform','link'].map(t => <option key={t} value={t}>{typeIcons[t]} {t}</option>)}
+              </select>
+            </div>
+          </div>
+          {form.type === 'text'
+            ? <div className="form-group"><label className="label">Text Content</label><textarea className="input" rows={4} value={form.text} onChange={e => setForm(f => ({ ...f, text: e.target.value }))} placeholder="Enter note text content..." /></div>
+            : <>
+                <div className="form-group"><label className="label">URL {['link','googleform'].includes(form.type) ? '* ' : ''}(or upload below)</label><input className="input" value={form.url} onChange={e => setForm(f => ({ ...f, url: e.target.value }))} placeholder="https://..." /></div>
+                {['pdf','image'].includes(form.type) && <div className="form-group"><label className="label">Or Upload File (max 25MB)</label><input type="file" className="input" accept=".pdf,.jpg,.jpeg,.png,.gif" onChange={e => setFile(e.target.files[0])} style={{ padding: 8 }} />{file && <div style={{ fontSize: 12, color: 'var(--green)', marginTop: 5 }}>✓ {file.name}</div>}</div>}
+              </>
+          }
+          <div className="form-group"><label className="label">Description</label><textarea className="input" rows={2} value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} placeholder="Optional description..." /></div>
+        </Modal>
+      )}
+      {confirm && <Confirm msg="Delete this note and its file from storage?" onYes={() => del(confirm)} onNo={() => setConfirm(null)} />}
+    </div>
+  );
+};
+
+// ── Admin Results ─────────────────────────────────────────────────────────────
+const AdminResults = () => {
+  const [results, setResults] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState('');
+  const [confirm, setConfirm] = useState(null);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    const q = new URLSearchParams({ page, limit: 20, ...(filter && { class: filter }) });
+    const d = await api.get(`/admin/results?${q}`).catch(() => ({ results: [], total: 0, totalPages: 1 }));
+    setResults(d.results); setTotal(d.total); setTotalPages(d.totalPages); setLoading(false);
+  }, [page, filter]);
+  useEffect(() => { load(); }, [load]);
+
+  const del = async (id) => { await api.del(`/admin/results/${id}`).then(() => toast('Deleted','s')).catch(e => toast(e.message,'e')); setConfirm(null); load(); };
+
+  return (
+    <div className="fade-in">
+      <div className="page-hdr"><div><h1 className="page-title">All Results</h1><p className="page-sub">{total} submissions</p></div></div>
+      <div className="filter-bar">
+        <select className="input" style={{ width: 160 }} value={filter} onChange={e => setFilter(e.target.value)}>
+          <option value="">All Classes</option>
+          {[9,10,11,12].map(c => <option key={c} value={c}>Class {c}</option>)}
+        </select>
+      </div>
+      {loading ? <div style={{ textAlign: 'center', padding: 60 }}><Spin size={40} /></div> : (
+        <div className="tbl-wrap">
+          <table>
+            <thead><tr><th>Student</th><th>Class</th><th>Test</th><th>Subject</th><th>Score</th><th>Correct</th><th>Date</th><th>Action</th></tr></thead>
+            <tbody>
+              {results.map(r => (
+                <tr key={r._id}>
+                  <td><div style={{ fontWeight: 600 }}>{r.student?.name}</div><div style={{ fontSize: 12, color: 'var(--muted)', fontFamily: 'JetBrains Mono' }}>@{r.student?.username}</div></td>
+                  <td><ClassBadge cls={r.student?.class} /></td>
+                  <td style={{ maxWidth: 180, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.test?.name}</td>
+                  <td><span className="badge b-purple">{r.test?.subject}</span></td>
+                  <td><span style={{ fontFamily: 'JetBrains Mono', fontWeight: 800, fontSize: 15, color: r.score >= 70 ? 'var(--green)' : r.score >= 40 ? 'var(--amber)' : 'var(--red)' }}>{r.score}%</span></td>
+                  <td style={{ color: 'var(--muted)', fontFamily: 'JetBrains Mono' }}>{r.correctAnswers}/{r.totalQuestions}</td>
+                  <td style={{ color: 'var(--muted)', fontSize: 12 }}>{new Date(r.submittedAt).toLocaleDateString()}</td>
+                  <td><button className="btn btn-danger btn-xs" onClick={() => setConfirm(r._id)}>🗑</button></td>
+                </tr>
+              ))}
+              {results.length === 0 && <tr><td colSpan={8} style={{ textAlign: 'center', padding: 40, color: 'var(--muted)' }}>No results yet</td></tr>}
+            </tbody>
+          </table>
+        </div>
+      )}
+      <Pagination page={page} totalPages={totalPages} onChange={setPage} />
+      {confirm && <Confirm msg="Delete this result permanently?" onYes={() => del(confirm)} onNo={() => setConfirm(null)} />}
+    </div>
+  );
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ROOT APP
+// ─────────────────────────────────────────────────────────────────────────────
+const App = () => {
+  const { user, loading } = useAuth();
+  const [view, setView] = useState('landing'); // 'landing' | 'login'
+
+  if (loading) return (
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ textAlign: 'center' }}><Spin size={48} /><p style={{ marginTop: 16, color: 'var(--muted)' }}>Loading...</p></div>
+    </div>
+  );
+
+  if (user?.role === 'admin')   return <AdminDash />;
+  if (user?.role === 'student') return <StudentDash />;
+  if (view === 'login')         return <Login onBack={() => setView('landing')} />;
+  return <Landing onLogin={() => setView('login')} />;
+};
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <AuthProvider><App /></AuthProvider>
+);
+</script>
+</body>
+</html>
