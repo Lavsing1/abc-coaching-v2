@@ -14,7 +14,9 @@ app.use(helmet({ crossOriginEmbedderPolicy: false }));
 
 app.use(cors({
   origin: "https://abc-coaching-v2.vercel.app",
-  credentials: true
+  credentials: true,
+  methods: ["GET","POST","PUT","DELETE","OPTIONS"],
+  allowedHeaders: ["Content-Type","Authorization"]
 }));
 
 
