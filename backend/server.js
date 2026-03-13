@@ -12,12 +12,16 @@ app.set('trust proxy', 1);
 // ── Security ──────────────────────────────────────────────────────────────────
 app.use(helmet({ crossOriginEmbedderPolicy: false }));
 
+app.use(helmet({ crossOriginEmbedderPolicy: false }));
+
 app.use(cors({
   origin: "https://abc-coaching-v2.vercel.app",
   credentials: true,
   methods: ["GET","POST","PUT","DELETE","OPTIONS"],
   allowedHeaders: ["Content-Type","Authorization"]
 }));
+
+app.options('*', cors());
 
 
 app.use(rateLimit({
