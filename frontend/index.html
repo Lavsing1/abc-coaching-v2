@@ -1453,26 +1453,32 @@ const AdminExtTests = () => {
       )}
       <Pagination page={page} totalPages={totalPages} onChange={setPage} />
 
-      {modal && (
+     {modal && (
         <Modal title="📋 Add External Test" onClose={() => setModal(false)}
           actions={<><button className="btn btn-secondary" onClick={() => setModal(false)}>Cancel</button><button className="btn btn-primary" onClick={save} disabled={saving}>{saving ? <Spin /> : 'Add'}</button></>}>
-          <div className="form-group"><label className="label">Title *</label><input className="input" value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} placeholder="Test title" /></div>
-          <div className="form-row">
-            <div className="form-group"><label className="label">Type *</label>
-              <select className="input" value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value }))}>
-                {['googleform','pdf','image','link'].map(t => <option key={t} value={t}>{typeIcons[t]} {t}</option>)}
-              </select>
+          
+          {/* Ye naya div add kiya hai padding/margin ke liye */}
+          <div style={{ marginTop: '20px' }}>
+            <div className="form-group"><label className="label">Title *</label><input className="input" value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} placeholder="Test title" /></div>
+            <div className="form-row">
+              <div className="form-group"><label className="label">Type *</label>
+                <select className="input" value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value }))}>
+                  {['googleform','pdf','image','link'].map(t => <option key={t} value={t}>{typeIcons[t]} {t}</option>)}
+                </select>
+              </div>
+              <div className="form-group"><label className="label">Class *</label>
+                <select className="input" value={form.class} onChange={e => setForm(f => ({ ...f, class: e.target.value }))}>
+                  <option value="">Select</option>
+                  {[9,10,11,12].map(c => <option key={c} value={c}>Class {c}</option>)}
+                </select>
+              </div>
             </div>
-            <div className="form-group"><label className="label">Class *</label>
-              <select className="input" value={form.class} onChange={e => setForm(f => ({ ...f, class: e.target.value }))}>
-                <option value="">Select</option>
-                {[9,10,11,12].map(c => <option key={c} value={c}>Class {c}</option>)}
-              </select>
-            </div>
+            <div className="form-group"><label className="label">URL (or upload file below)</label><input className="input" value={form.url} onChange={e => setForm(f => ({ ...f, url: e.target.value }))} placeholder="https://..." /></div>
+            <div className="form-group"><label className="label">OR Upload File (PDF/Image · max 25MB)</label><input type="file" className="input" accept=".pdf,.jpg,.jpeg,.png" onChange={e => setFile(e.target.files[0])} style={{ padding: 8 }} />{file && <div style={{ fontSize: 12, color: 'var(--green)', marginTop: 5 }}>✓ {file.name}</div>}</div>
+            <div className="form-group"><label className="label">Description</label><textarea className="input" rows={2} value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} placeholder="Optional description..." /></div>
           </div>
-          <div className="form-group"><label className="label">URL (or upload file below)</label><input className="input" value={form.url} onChange={e => setForm(f => ({ ...f, url: e.target.value }))} placeholder="https://..." /></div>
-          <div className="form-group"><label className="label">OR Upload File (PDF/Image · max 25MB)</label><input type="file" className="input" accept=".pdf,.jpg,.jpeg,.png" onChange={e => setFile(e.target.files[0])} style={{ padding: 8 }} />{file && <div style={{ fontSize: 12, color: 'var(--green)', marginTop: 5 }}>✓ {file.name}</div>}</div>
-          <div className="form-group"><label className="label">Description</label><textarea className="input" rows={2} value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} placeholder="Optional description..." /></div>
+          {/* Wrapper div yahan close ho gaya */}
+
         </Modal>
       )}
       {confirm && <Confirm msg="Delete this external test?" onYes={() => del(confirm)} onNo={() => setConfirm(null)} />}
