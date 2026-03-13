@@ -10,20 +10,23 @@ const app = express();
 app.set('trust proxy', 1);
 
 // ── Security ──────────────────────────────────────────────────────────────────
-app.use(helmet({ crossOriginEmbedderPolicy: false }));
+// Helmet ko cross-origin requests allow karne ke liye configure kiya
+app.use(helmet({ 
+  crossOriginEmbedderPolicy: false,
+  crossOriginResourcePolicy: { policy: "cross-origin" } 
+}));
 
-app.use(helmet({ crossOriginEmbedderPolicy: false }));
-
+// CORS Configuration
 app.use(cors({
   origin: "https://abc-coaching-v2.vercel.app",
   credentials: true,
-  methods: ["GET","POST","PUT","DELETE","OPTIONS"],
-  allowedHeaders: ["Content-Type","Authorization"]
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
 app.options('*', cors());
 
-
+// Rate Limiting
 app.use(rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 200,
@@ -36,6 +39,7 @@ app.use('/api/auth', rateLimit({
   message: { error: 'Too many login attempts' },
 }));
 
+// Parsers & Logging
 app.use(express.json({ limit: '15mb' }));
 app.use(express.urlencoded({ extended: true, limit: '15mb' }));
 if (process.env.NODE_ENV !== 'production') app.use(morgan('dev'));
@@ -58,10 +62,23 @@ app.use((err, req, res, next) => {
 });
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
-(async () => {
-  await mongoose.connect(process.env.MONGODB_URI);
-  console.log('✅ MongoDB connected');
-  await require('./utils/seed')();
-  const PORT = process.env.PORT || 5000;
-  app.listen(PORT, () => console.log(`🚀 API on :${PORT}`));
-})().catch(e => { console.error(e); process.exit(1); });
+const PORT = process.env.PORT || 5000;
+
+// Pehle Server Start karo, phir Database connect karo
+app.listen(PORT, async () => {
+  console.log(`🚀 API is running on port :${PORT}`);
+  
+  try {
+    await mongoose.connect(process.env.MONGODB_URI);
+    console.log('✅ MongoDB connected successfully');
+    
+    // Seed database only after connection is successful
+    if (require('./utils/seed')) {
+      await require('./utils/seed')();
+    }
+  } catch (error) {
+    console.error('❌ MongoDB connection error:', error.message);
+    // Yahan humne jaan bujh kar process.exit(1) nahi lagaya hai
+    // Taaki server chalta rahe aur Vercel ko proper JSON error (with CORS) mile
+  }
+});
