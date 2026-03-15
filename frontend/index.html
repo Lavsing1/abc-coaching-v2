@@ -100,8 +100,7 @@ textarea.input{resize:vertical;min-height:80px}
 .sidebar-item.active .s-icon{color:var(--primary)}
 .s-icon{font-size:17px;width:20px;text-align:center;flex-shrink:0}
 .main{flex:1;padding:28px;min-width:0;overflow-x:hidden}
-@media(max-width:768px){.sidebar{display:none}.main{padding:16px}}
-
+@media(max-width:768px){.sidebar{position:fixed;left:-250px;top:62px;height:calc(100vh - 62px);z-index:999;transition:left 0.3s ease;display:flex !important;margin:0}.sidebar.open{left:0;box-shadow:10px 0 50px rgba(0,0,0,0.8)}.main{padding:16px}}
 /* ── Page header ───────────────────────────────────────────────────────────── */
 .page-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;gap:12px;flex-wrap:wrap}
 .page-title{font-size:22px;font-weight:800}
@@ -264,6 +263,10 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:36px
 /* ── Scrollable modal ──────────────────────────────────────────────────────── */
 .scroll-area{overflow-y:auto}
 </style>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+
 </head>
 <body>
 <div id="root"></div>
@@ -272,6 +275,9 @@ footer{background:var(--surface);border-top:1px solid var(--border);padding:36px
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+
+<script src="leaderboardData.js"></script>
+
 <script type="text/babel">
 const { useState, useEffect, useCallback, useRef, createContext, useContext, useMemo } = React;
 
@@ -404,6 +410,25 @@ const Pagination = ({ page, totalPages, onChange }) => {
 const ClassBadge = ({ cls }) => (
   <span className="badge b-cyan">Class {cls}</span>
 );
+
+// ── Math Renderer ─────────────────────────────────────────────────────────────
+const MathText = ({ math }) => {
+  if (!window.katex) return <span>{math}</span>;
+  try {
+    const html = window.katex.renderToString(math, { throwOnError: false });
+    return <span dangerouslySetInnerHTML={{ __html: html }} />;
+  } catch (e) { return <span style={{ color: 'red' }}>{math}</span>; }
+};
+
+const TextWithMath = ({ text }) => {
+  if (!text) return null;
+  const parts = typeof text === 'string' ? text.split('$$') : [text];
+  return (
+    <span>
+      {parts.map((p, i) => i % 2 === 0 ? <span key={i}>{p}</span> : <MathText key={i} math={p} />)}
+    </span>
+  );
+};
 
 // ─────────────────────────────────────────────────────────────────────────────
 // LANDING PAGE
@@ -548,16 +573,20 @@ const Login = ({ onBack }) => {
 // ─────────────────────────────────────────────────────────────────────────────
 const StudentDash = () => {
   const { user, logout } = useAuth();
-  const [page, setPage] = useState('home');
+  const [page, setPage] = useState(() => localStorage.getItem('studentPage') || 'home');
   const [testAttempt, setTestAttempt] = useState(null);
   const [resultView, setResultView] = useState(null);
+  const [menuOpen, setMenuOpen] = useState(false); // Mobile menu ke liye naya state
+
+  useEffect(() => { localStorage.setItem('studentPage', page); }, [page]);
 
   const navItems = [
-    { id: 'home',     icon: '🏠', label: 'Dashboard' },
-    { id: 'tests',    icon: '📝', label: 'Tests' },
-    { id: 'ext',      icon: '📋', label: 'External Tests' },
-    { id: 'notes',    icon: '📚', label: 'Study Notes' },
-    { id: 'results',  icon: '📊', label: 'My Results' },
+    { id: 'home',        icon: '🏠', label: 'Dashboard' },
+    { id: 'tests',       icon: '📝', label: 'Tests' },
+    { id: 'ext',         icon: '📋', label: 'External Tests' },
+    { id: 'notes',       icon: '📚', label: 'Study Notes' },
+    { id: 'results',     icon: '📊', label: 'My Results' },
+    { id: 'leaderboard', icon: '🏆', label: 'Leaderboard' }, // 👈 Naya menu item
   ];
 
   if (testAttempt) return <TestAttempt test={testAttempt} onDone={r => { setTestAttempt(null); setResultView(r); }} onCancel={() => setTestAttempt(null)} />;
@@ -566,22 +595,31 @@ const StudentDash = () => {
   return (
     <div>
       <nav className="navbar">
-        <div className="nav-brand"><div className="nav-logo">A</div>ABC Coaching</div>
+        <div className="nav-brand">
+          {/* Hamburger Menu Button */}
+          <button className="mob-menu-btn" onClick={() => setMenuOpen(true)}>☰</button>
+          <div className="nav-logo">A</div>ABC Coaching
+        </div>
         <div className="nav-right">
           <span className="badge b-cyan" style={{ marginRight: 6 }}>Class {user.class}</span>
-          <span style={{ fontSize: 13, fontWeight: 600, padding: '0 8px' }}>{user.name}</span>
-          <button className="btn btn-secondary btn-sm" onClick={logout}>🚪 Logout</button>
+          {/* Mobile par naam chupane ke liye styling */}
+          <span style={{ fontSize: 13, fontWeight: 600, padding: '0 8px', display: window.innerWidth < 600 ? 'none' : 'inline-block' }}>{user.name}</span>
+          <button className="btn btn-danger btn-sm" onClick={logout} title="Logout">🚪</button>
         </div>
       </nav>
       <div className="layout">
-        <aside className="sidebar">
+        {/* Mobile par background darken karne wala overlay */}
+        {menuOpen && <div className="overlay" style={{ zIndex: 998, background: 'rgba(0,0,0,0.5)', padding: 0 }} onClick={() => setMenuOpen(false)} />}
+        
+        {/* Sidebar me naya 'open' class logic */}
+        <aside className={`sidebar ${menuOpen ? 'open' : ''}`}>
           <div style={{ padding: '14px 10px', marginBottom: 8, background: 'var(--surface2)', borderRadius: 10, border: '1px solid var(--border)' }}>
             <div style={{ fontSize: 12, color: 'var(--muted)' }}>Logged in as</div>
             <div style={{ fontWeight: 700, fontSize: 14, marginTop: 2 }}>{user.name}</div>
             <div className="badge b-purple" style={{ marginTop: 6 }}>Class {user.class} Student</div>
           </div>
           {navItems.map(n => (
-            <button key={n.id} className={`sidebar-item ${page === n.id ? 'active' : ''}`} onClick={() => setPage(n.id)}>
+            <button key={n.id} className={`sidebar-item ${page === n.id ? 'active' : ''}`} onClick={() => { setPage(n.id); setMenuOpen(false); }}>
               <span className="s-icon">{n.icon}</span>{n.label}
             </button>
           ))}
@@ -591,11 +629,12 @@ const StudentDash = () => {
           </button>
         </aside>
         <main className="main">
-          {page === 'home'    && <StudentHome setPage={setPage} />}
-          {page === 'tests'   && <StudentTests onAttempt={setTestAttempt} onViewResult={setResultView} />}
-          {page === 'ext'     && <StudentExtTests />}
-          {page === 'notes'   && <StudentNotes />}
-          {page === 'results' && <StudentResults onView={setResultView} />}
+          {page === 'home'        && <StudentHome setPage={setPage} />}
+          {page === 'tests'       && <StudentTests onAttempt={setTestAttempt} onViewResult={setResultView} />}
+          {page === 'ext'         && <StudentExtTests />}
+          {page === 'notes'       && <StudentNotes />}
+          {page === 'results'     && <StudentResults onView={setResultView} />}
+          {page === 'leaderboard' && <StudentLeaderboard />} {/* 👈 Naya page render */}
         </main>
       </div>
     </div>
@@ -648,7 +687,8 @@ const StudentHome = ({ setPage }) => {
         </div>
       )}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-        {[['📝','Take a Test','tests'],['📚','Study Notes','notes'],['📋','External Tests','ext'],['📊','My Results','results']].map(([e, l, p]) => (
+        {/* 👈 Leaderboard add kiya yahan */}
+        {[['📝','Take a Test','tests'],['📚','Study Notes','notes'],['📋','External Tests','ext'],['📊','My Results','results'],['🏆','Leaderboard','leaderboard']].map(([e, l, p]) => (
           <div key={p} className="card card-hover" style={{ padding: 22 }} onClick={() => setPage(p)}>
             <div style={{ fontSize: 28, marginBottom: 10 }}>{e}</div>
             <div style={{ fontWeight: 700 }}>{l}</div>
@@ -703,6 +743,124 @@ const StudentTests = ({ onAttempt, onViewResult }) => {
           </div>
         )
       }
+    </div>
+  );
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
+// STUDENT LEADERBOARD (Pro Level with Recent Test Default & Dropdown)
+// ─────────────────────────────────────────────────────────────────────────────
+const StudentLeaderboard = () => {
+  const { user } = useAuth();
+  const [leaders, setLeaders] = useState([]);
+  const [myResults, setMyResults] = useState([]);
+  const [selectedTest, setSelectedTest] = useState('');
+
+  // 1. User ke diye hue saare tests fetch karo
+  useEffect(() => {
+    api.get('/student/results')
+      .then(d => {
+        const results = d.results || [];
+        setMyResults(results);
+        
+        // 2. Agar test diye hain, toh default 'Recent Test' select kar do
+        if (results.length > 0) {
+          setSelectedTest(results[0].test?._id || 'overall');
+        } else {
+          // Agar ek bhi test nahi diya toh 'overall' dikhao
+          setSelectedTest('overall'); 
+        }
+      })
+      .catch(e => console.log(e));
+  }, []);
+
+  // 3. Dropdown me jo select kiya hai (ya jo default aaya hai), uske hisaab se rank banao
+  useEffect(() => {
+    if (!window.generateLeaderboard || !selectedTest) return;
+
+    if (selectedTest === 'overall') {
+      // Overall Class Performance
+      let avgScore = 0;
+      if (myResults.length > 0) {
+        const total = myResults.reduce((a, r) => a + (r.score || 0), 0);
+        avgScore = Math.round(total / myResults.length);
+      }
+      const data = window.generateLeaderboard(user.class, 100, user, avgScore);
+      setLeaders(data);
+    } else {
+      // Specific Test Result
+      const result = myResults.find(r => r.test?._id === selectedTest);
+      if (result) {
+        const data = window.generateLeaderboard(user.class, result.totalQuestions, user, result.correctAnswers);
+        setLeaders(data);
+      }
+    }
+  }, [user, selectedTest, myResults]);
+
+  return (
+    <div className="fade-in">
+      <div className="page-hdr" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 15 }}>
+        <div>
+          <h1 className="page-title">🏆 Class {user.class} Leaderboard</h1>
+          <p className="page-sub">Rankings for your recent and past tests</p>
+        </div>
+        
+        {/* 🎯 NAYA DROPDOWN YAHAN HAI */}
+        <div style={{ background: 'var(--surface2)', padding: '8px 15px', borderRadius: 10, border: '1px solid var(--primary)' }}>
+          <select 
+            style={{ background: 'transparent', border: 'none', color: 'var(--text)', outline: 'none', fontSize: 14, fontWeight: 600, cursor: 'pointer', width: '100%' }}
+            value={selectedTest} 
+            onChange={(e) => setSelectedTest(e.target.value)}
+          >
+            {myResults.map((r, index) => (
+              <option key={r.test?._id} value={r.test?._id} style={{ color: 'black' }}>
+                📄 {r.test?.name} {index === 0 ? '(Recent)' : ''}
+              </option>
+            ))}
+            <option value="overall" style={{ color: 'black' }}>🌟 Overall Performance</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+        <div className="tbl-wrap" style={{ maxHeight: '65vh', overflowY: 'auto' }}>
+          <table>
+            <thead style={{ position: 'sticky', top: 0, zIndex: 10, background: 'var(--surface2)' }}>
+              <tr>
+                <th>Rank</th>
+                <th>Student</th>
+                <th>Marks</th>
+                <th>Performance</th>
+              </tr>
+            </thead>
+            <tbody>
+              {leaders.map((l, i) => {
+                const isMe = l.name.includes("(You)");
+                return (
+                  <tr key={i} style={{ background: isMe ? 'rgba(124, 58, 237, 0.15)' : '' }}>
+                    <td style={{ fontWeight: 800 }}>{i < 3 ? ['🥇','🥈','🥉'][i] : `#${i+1}`}</td>
+                    <td style={{ fontWeight: isMe ? 800 : 600, color: isMe ? 'var(--primary)' : 'var(--text)' }}>
+                      {l.name} {isMe && '🎯'}
+                    </td>
+                    <td style={{ fontFamily: 'monospace', fontWeight: isMe ? 700 : 400 }}>
+                      {l.marks}/{l.total}
+                    </td>
+                    <td>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <div style={{ flex: 1, height: 8, background: 'var(--border)', borderRadius: 10, minWidth: 60, overflow: 'hidden' }}>
+                          <div style={{ width: `${l.percentage}%`, height: '100%', background: isMe ? 'var(--primary)' : 'var(--green)', borderRadius: 10 }}></div>
+                        </div>
+                        <span style={{ fontWeight: 800, color: isMe ? 'var(--primary)' : 'var(--green)', fontSize: 13 }}>{l.percentage}%</span>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 };
@@ -787,11 +945,16 @@ const TestAttempt = ({ test, onDone, onCancel }) => {
         {/* Question */}
         <div className="card" style={{ padding: 26 }}>
           <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 10 }}>Question {q + 1} of {data.questions.length}</div>
-          <div style={{ fontSize: 16, fontWeight: 600, lineHeight: 1.6, marginBottom: 22 }}>{curQ.question}</div>
+          
+          <div style={{ fontSize: 16, fontWeight: 600, lineHeight: 1.6, marginBottom: 22 }}>
+            <TextWithMath text={curQ.question} />
+          </div>
+          
           {curQ.options.map((opt, i) => (
             <button key={i} className={`option ${answers[curQ._id] === i ? 'sel' : ''}`}
               onClick={() => setAnswers(a => ({ ...a, [curQ._id]: i }))}>
-              <span className="opt-ltr">{['A','B','C','D'][i]}</span>{opt}
+              <span className="opt-ltr">{['A','B','C','D'][i]}</span>
+              <TextWithMath text={opt} />
             </button>
           ))}
         </div>
@@ -842,7 +1005,7 @@ const ResultDetail = ({ result, onBack }) => {
             {data.review.map((r, i) => (
               <div key={i} className={`review-card ${r.isCorrect ? 'review-correct' : 'review-wrong'}`}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
-                  <span style={{ fontWeight: 600, fontSize: 14 }}>Q{i + 1}. {r.question}</span>
+                  <span style={{ fontWeight: 600, fontSize: 14 }}>Q{i + 1}. <TextWithMath text={r.question} /></span>
                   <span style={{ color: r.isCorrect ? 'var(--green)' : 'var(--red)', fontWeight: 700 }}>{r.isCorrect ? '✓' : '✗'}</span>
                 </div>
                 {r.options.map((opt, j) => (
@@ -852,12 +1015,12 @@ const ResultDetail = ({ result, onBack }) => {
                     border: `1px solid ${j === r.correctAnswer ? 'rgba(16,185,129,.3)' : j === r.selectedAnswer && !r.isCorrect ? 'rgba(239,68,68,.3)' : 'var(--border)'}`,
                     color: j === r.correctAnswer ? '#34d399' : j === r.selectedAnswer && !r.isCorrect ? '#f87171' : 'var(--text)',
                   }}>
-                    {['A','B','C','D'][j]}. {opt}
+                    {['A','B','C','D'][j]}. <TextWithMath text={opt} />
                     {j === r.correctAnswer && <span style={{ marginLeft: 8, fontSize: 11 }}>✓ Correct</span>}
                     {j === r.selectedAnswer && j !== r.correctAnswer && <span style={{ marginLeft: 8, fontSize: 11 }}>Your answer</span>}
                   </div>
                 ))}
-                {r.explanation && <div style={{ marginTop: 10, padding: '8px 12px', background: 'rgba(124,58,237,.1)', borderRadius: 8, fontSize: 13, color: '#a78bfa' }}>💡 {r.explanation}</div>}
+                {r.explanation && <div style={{ marginTop: 10, padding: '8px 12px', background: 'rgba(124,58,237,.1)', borderRadius: 8, fontSize: 13, color: '#a78bfa' }}>💡 <TextWithMath text={r.explanation} /></div>}
               </div>
             ))}
           </div>
@@ -968,14 +1131,13 @@ const StudentResults = ({ onView }) => {
     </div>
   );
 };
-
 // ─────────────────────────────────────────────────────────────────────────────
-// ADMIN DASHBOARD
-// ─────────────────────────────────────────────────────────────────────────────
+// ── ADMIN DASHBOARD ─────────────────────────────────────────────────────────────
 const AdminDash = () => {
   const { user, logout } = useAuth();
   const [page, setPage] = useState('overview');
   const [testEditor, setTestEditor] = useState(null); // null | {test, isEdit}
+  const [menuOpen, setMenuOpen] = useState(false); // Mobile menu state
 
   const navSections = [
     { label: 'Dashboard', items: [{ id: 'overview', icon: '🏠', label: 'Overview' }] },
@@ -985,7 +1147,10 @@ const AdminDash = () => {
       { id: 'ext-tests',  icon: '📋', label: 'External Tests' },
       { id: 'notes',      icon: '📚', label: 'Study Notes' },
     ]},
-    { label: 'Reports', items: [{ id: 'results', icon: '📊', label: 'Results' }] },
+    { label: 'Reports', items: [
+      { id: 'results', icon: '📊', label: 'Results' },
+      { id: 'leaderboard', icon: '🏆', label: 'Leaderboard' } // 👈 NAYA MENU ITEM YAHAN ADD KIYA
+    ] },
   ];
 
   if (testEditor) return <AdminTestEditor {...testEditor} onDone={() => setTestEditor(null)} />;
@@ -993,19 +1158,29 @@ const AdminDash = () => {
   return (
     <div>
       <nav className="navbar">
-        <div className="nav-brand"><div className="nav-logo">A</div>ABC Coaching <span className="badge b-amber" style={{ marginLeft: 8 }}>Admin</span></div>
+        <div className="nav-brand">
+          {/* Hamburger Menu Button */}
+          <button className="mob-menu-btn" onClick={() => setMenuOpen(true)}>☰</button>
+          <div className="nav-logo">A</div>ABC Coaching 
+          <span className="badge b-amber" style={{ marginLeft: 8, display: window.innerWidth < 600 ? 'none' : 'inline-flex' }}>Admin</span>
+        </div>
         <div className="nav-right">
-          <span style={{ fontSize: 13, fontWeight: 600 }}>{user.name}</span>
-          <button className="btn btn-secondary btn-sm" onClick={logout}>🚪 Logout</button>
+          {/* Mobile par naam chupane ke liye styling */}
+          <span style={{ fontSize: 13, fontWeight: 600, display: window.innerWidth < 600 ? 'none' : 'inline-block' }}>{user.name}</span>
+          <button className="btn btn-danger btn-sm" onClick={logout} title="Logout">🚪</button>
         </div>
       </nav>
       <div className="layout">
-        <aside className="sidebar">
+        {/* Mobile par background darken karne wala overlay */}
+        {menuOpen && <div className="overlay" style={{ zIndex: 998, background: 'rgba(0,0,0,0.5)', padding: 0 }} onClick={() => setMenuOpen(false)} />}
+        
+        {/* Sidebar me naya 'open' class logic */}
+        <aside className={`sidebar ${menuOpen ? 'open' : ''}`}>
           {navSections.map(s => (
             <div key={s.label}>
               <div className="sidebar-section">{s.label}</div>
               {s.items.map(n => (
-                <button key={n.id} className={`sidebar-item ${page === n.id ? 'active' : ''}`} onClick={() => setPage(n.id)}>
+                <button key={n.id} className={`sidebar-item ${page === n.id ? 'active' : ''}`} onClick={() => { setPage(n.id); setMenuOpen(false); }}>
                   <span className="s-icon">{n.icon}</span>{n.label}
                 </button>
               ))}
@@ -1017,12 +1192,13 @@ const AdminDash = () => {
           </button>
         </aside>
         <main className="main">
-          {page === 'overview'   && <AdminOverview />}
-          {page === 'students'   && <AdminStudents />}
-          {page === 'tests'      && <AdminTests onEdit={t => setTestEditor({ test: t, isEdit: true })} onNew={() => setTestEditor({ test: null, isEdit: false })} />}
-          {page === 'ext-tests'  && <AdminExtTests />}
-          {page === 'notes'      && <AdminNotes />}
-          {page === 'results'    && <AdminResults />}
+          {page === 'overview'    && <AdminOverview />}
+          {page === 'students'    && <AdminStudents />}
+          {page === 'tests'       && <AdminTests onEdit={t => setTestEditor({ test: t, isEdit: true })} onNew={() => setTestEditor({ test: null, isEdit: false })} />}
+          {page === 'ext-tests'   && <AdminExtTests />}
+          {page === 'notes'       && <AdminNotes />}
+          {page === 'results'     && <AdminResults />}
+          {page === 'leaderboard' && <AdminLeaderboard />} {/* 👈 NAYA PAGE RENDER YAHAN ADD KIYA */}
         </main>
       </div>
     </div>
@@ -1059,6 +1235,88 @@ const AdminOverview = () => {
               </div>
             ))}
           </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ADMIN LEADERBOARD (Naya component jo us page pe dikhega)
+// ─────────────────────────────────────────────────────────────────────────────
+const AdminLeaderboard = () => {
+  const [cls, setCls] = useState(10); // Default Class 10
+  const [leaders, setLeaders] = useState([]);
+
+  const handleGenerate = () => {
+    if (window.generateLeaderboard) {
+      // Admin hai, isliye currentUser ko 'null' bhejenge taaki '(You)' na dikhe
+      const data = window.generateLeaderboard(Number(cls), 100, null, 0);
+      setLeaders(data);
+      toast(`Generated Dummy Leaderboard for Class ${cls}`, 's');
+    } else {
+      toast('leaderboardData.js file is missing!', 'e');
+    }
+  };
+
+  return (
+    <div className="fade-in">
+      <div className="page-hdr">
+        <h1 className="page-title">🏆 Leaderboard Generator</h1>
+        <p className="page-sub">View the dummy leaderboard generated for students</p>
+      </div>
+
+      <div className="card" style={{ marginBottom: 20 }}>
+        <div style={{ display: 'flex', gap: 15, alignItems: 'flex-end', flexWrap: 'wrap' }}>
+          <div style={{ flex: 1, minWidth: '200px' }}>
+            <label className="lbl" style={{ marginBottom: 8, display: 'block', fontWeight: 600 }}>Select Class</label>
+            <select className="input" value={cls} onChange={e => setCls(e.target.value)}>
+              {[9, 10, 11, 12].map(c => <option key={c} value={c} style={{color: 'black'}}>Class {c}</option>)}
+            </select>
+          </div>
+          <button className="btn btn-primary" onClick={handleGenerate} style={{ minWidth: '150px', justifyContent: 'center' }}>
+            ⚡ Generate
+          </button>
+        </div>
+      </div>
+
+      {leaders.length > 0 ? (
+        <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+          <div className="tbl-wrap" style={{ maxHeight: '60vh', overflowY: 'auto' }}>
+            <table>
+              <thead style={{ position: 'sticky', top: 0, zIndex: 10, background: 'var(--surface2)' }}>
+                <tr>
+                  <th>Rank</th>
+                  <th>Student Name</th>
+                  <th>Marks</th>
+                  <th>Percentage</th>
+                </tr>
+              </thead>
+              <tbody>
+                {leaders.map((l, i) => (
+                  <tr key={i}>
+                    <td style={{ fontWeight: 800 }}>{i < 3 ? ['🥇','🥈','🥉'][i] : `#${i+1}`}</td>
+                    <td style={{ fontWeight: 600 }}>{l.name}</td>
+                    <td style={{ fontFamily: 'monospace' }}>{l.marks}/{l.total}</td>
+                    <td>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <div style={{ flex: 1, height: 6, background: 'var(--border)', borderRadius: 10, minWidth: 60, overflow: 'hidden' }}>
+                          <div style={{ width: `${l.percentage}%`, height: '100%', background: 'var(--green)', borderRadius: 10 }}></div>
+                        </div>
+                        <span style={{ fontWeight: 800, color: 'var(--green)', fontSize: 12 }}>{l.percentage}%</span>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ) : (
+        <div className="empty" style={{ padding: '60px 20px' }}>
+          <div className="empty-icon">📊</div>
+          <div className="empty-txt">No Data Generated</div>
+          <p style={{ color: 'var(--muted)', fontSize: 13 }}>Select a class and click generate to view.</p>
         </div>
       )}
     </div>
@@ -1329,7 +1587,10 @@ const AdminTestEditor = ({ test, isEdit, onDone }) => {
       </div>
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-        <h3>{questions.length} Question{questions.length !== 1 ? 's' : ''}</h3>
+        <h3 style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          {questions.length} Question{questions.length !== 1 ? 's' : ''}
+          <span className="badge b-purple" style={{ textTransform: 'none', fontWeight: 600 }}>💡 Tip: Use $$ for maths (e.g. $$x^2$$)</span>
+        </h3>
         <button className="btn btn-secondary btn-sm" onClick={addQ}>➕ Add Question</button>
       </div>
 
@@ -1339,23 +1600,50 @@ const AdminTestEditor = ({ test, isEdit, onDone }) => {
             <span className="badge b-purple">Q{qi + 1}</span>
             {questions.length > 1 && <button className="btn btn-danger btn-xs" onClick={() => delQ(qi)}>🗑 Remove</button>}
           </div>
+          
           <div className="form-group">
             <label className="label">Question Text *</label>
-            <textarea className="input" rows={2} value={q.question} onChange={e => updQ(qi, 'question', e.target.value)} placeholder="Enter the question..." />
+            <textarea className="input" rows={2} value={q.question} onChange={e => updQ(qi, 'question', e.target.value)} placeholder="Enter the question (use $$ for maths)..." />
+            
+            {/* Live Preview for Math in Question */}
+            {q.question && q.question.includes('$$') && (
+              <div style={{ marginTop: 8, padding: '10px 14px', background: 'var(--surface)', borderRadius: 8, fontSize: 14, border: '1px dashed var(--border2)' }}>
+                <span style={{ fontSize: 11, color: 'var(--muted)', display: 'block', marginBottom: 4, textTransform: 'uppercase', fontWeight: 700 }}>Live Preview:</span>
+                <TextWithMath text={q.question} />
+              </div>
+            )}
           </div>
+
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 12 }}>
             {q.options.map((opt, oi) => (
-              <div key={oi} className="opt-row">
-                <input type="radio" className="opt-radio" name={`correct-${qi}`} checked={q.answer === oi} onChange={() => updQ(qi, 'answer', oi)} title="Mark as correct" />
-                <input className="input" value={opt} onChange={e => updOpt(qi, oi, e.target.value)}
-                  placeholder={`Option ${['A','B','C','D'][oi]}${q.answer === oi ? ' (correct)' : ''}`}
-                  style={{ borderColor: q.answer === oi ? 'var(--green)' : undefined }} />
+              <div key={oi} className="opt-row" style={{ alignItems: 'flex-start' }}>
+                <input type="radio" className="opt-radio" name={`correct-${qi}`} checked={q.answer === oi} onChange={() => updQ(qi, 'answer', oi)} title="Mark as correct" style={{ marginTop: 12 }} />
+                <div style={{ flex: 1 }}>
+                  <input className="input" value={opt} onChange={e => updOpt(qi, oi, e.target.value)}
+                    placeholder={`Option ${['A','B','C','D'][oi]}${q.answer === oi ? ' (correct)' : ''}`}
+                    style={{ borderColor: q.answer === oi ? 'var(--green)' : undefined, width: '100%' }} />
+                  
+                  {/* Live Preview for Math in Options */}
+                  {opt && opt.includes('$$') && (
+                    <div style={{ marginTop: 4, padding: '6px 10px', background: 'var(--surface)', borderRadius: 6, fontSize: 13, border: '1px dashed var(--border2)' }}>
+                      <TextWithMath text={opt} />
+                    </div>
+                  )}
+                </div>
               </div>
             ))}
           </div>
+          
           <div className="form-group" style={{ marginBottom: 0 }}>
             <label className="label">Explanation (optional)</label>
             <input className="input" value={q.explanation} onChange={e => updQ(qi, 'explanation', e.target.value)} placeholder="Explain the correct answer..." />
+            
+            {/* Live Preview for Math in Explanation */}
+            {q.explanation && q.explanation.includes('$$') && (
+              <div style={{ marginTop: 6, padding: '6px 10px', background: 'var(--surface)', borderRadius: 6, fontSize: 13, border: '1px dashed var(--border2)' }}>
+                  <TextWithMath text={q.explanation} />
+              </div>
+            )}
           </div>
         </div>
       ))}
@@ -1367,7 +1655,6 @@ const AdminTestEditor = ({ test, isEdit, onDone }) => {
     </div>
   );
 };
-
 // ── Admin External Tests ──────────────────────────────────────────────────────
 const AdminExtTests = () => {
   const [tests, setTests] = useState([]);
